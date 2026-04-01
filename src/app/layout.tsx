@@ -1,10 +1,8 @@
 // src/app/layout.tsx
 import type { Metadata } from 'next'
-import { Inter, Space_Grotesk, Geist } from 'next/font/google'
+import { Inter, Space_Grotesk } from 'next/font/google'
+import { TRPCReactProvider } from '@/lib/trpc/client'
 import './globals.css'
-import { cn } from "@/lib/utils";
-
-const geist = Geist({subsets:['latin'],variable:'--font-sans'});
 
 const spaceGrotesk = Space_Grotesk({
   subsets: ['latin'],
@@ -29,10 +27,10 @@ export default function RootLayout({
   return (
     <html
       lang="pt-BR"
-      className={cn("dark", spaceGrotesk.variable, inter.variable, "font-sans", geist.variable)}
+      className={`dark ${spaceGrotesk.variable} ${inter.variable}`}
     >
       <body className="min-h-screen bg-background text-on-surface font-body antialiased">
-        {children}
+        <TRPCReactProvider>{children}</TRPCReactProvider>
       </body>
     </html>
   )
