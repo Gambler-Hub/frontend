@@ -3,6 +3,7 @@ import type { Metadata } from 'next'
 import { Inter, Space_Grotesk } from 'next/font/google'
 import { TRPCReactProvider } from '@/lib/trpc/client'
 import Navbar from '@/components/navbar'
+import Footer from '@/components/footer'
 import './globals.css'
 
 const spaceGrotesk = Space_Grotesk({
@@ -34,6 +35,7 @@ export default function RootLayout({
         <TRPCReactProvider>
           <Navbar />
           <main className="pt-16">{children}</main>
+          <Footer />
         </TRPCReactProvider>
       </body>
     </html>
