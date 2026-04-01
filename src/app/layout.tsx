@@ -2,6 +2,7 @@
 import type { Metadata } from 'next'
 import { Inter, Space_Grotesk } from 'next/font/google'
 import { TRPCReactProvider } from '@/lib/trpc/client'
+import Navbar from '@/components/navbar'
 import './globals.css'
 
 const spaceGrotesk = Space_Grotesk({
@@ -30,7 +31,10 @@ export default function RootLayout({
       className={`dark ${spaceGrotesk.variable} ${inter.variable}`}
     >
       <body className="min-h-screen bg-background text-on-surface font-body antialiased">
-        <TRPCReactProvider>{children}</TRPCReactProvider>
+        <TRPCReactProvider>
+          <Navbar />
+          <main className="pt-16">{children}</main>
+        </TRPCReactProvider>
       </body>
     </html>
   )
