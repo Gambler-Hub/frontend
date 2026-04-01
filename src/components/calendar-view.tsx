@@ -305,7 +305,7 @@ export default function CalendarView() {
                       >
                         <div className="flex items-center justify-between">
                           <span className="text-[10px] font-bold text-primary tracking-tighter">
-                            AI POWER INDEX
+                            IA ÍNDICE DE FORÇA
                           </span>
                           <span
                             className={`font-headline text-sm font-bold ${scoreTextClass(score)}`}

@@ -99,7 +99,7 @@ function HeroContent() {
               {/* Power Index */}
               <div className="text-center">
                 <p className="text-3xl font-headline font-black text-secondary tracking-tighter uppercase mb-1">
-                  Power Index
+                  Índice de Força
                 </p>
                 <p className="text-xs font-bold uppercase tracking-widest text-on-surface-variant">
                   Análise de Potencial
