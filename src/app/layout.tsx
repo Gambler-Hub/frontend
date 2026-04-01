@@ -1,7 +1,10 @@
 // src/app/layout.tsx
 import type { Metadata } from 'next'
-import { Inter, Space_Grotesk } from 'next/font/google'
+import { Inter, Space_Grotesk, Geist } from 'next/font/google'
 import './globals.css'
+import { cn } from "@/lib/utils";
+
+const geist = Geist({subsets:['latin'],variable:'--font-sans'});
 
 const spaceGrotesk = Space_Grotesk({
   subsets: ['latin'],
@@ -26,7 +29,7 @@ export default function RootLayout({
   return (
     <html
       lang="pt-BR"
-      className={`dark ${spaceGrotesk.variable} ${inter.variable}`}
+      className={cn("dark", spaceGrotesk.variable, inter.variable, "font-sans", geist.variable)}
     >
       <body className="min-h-screen bg-background text-on-surface font-body antialiased">
         {children}
