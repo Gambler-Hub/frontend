@@ -1,0 +1,92 @@
+// src/lib/strapi.ts
+import 'server-only'
+
+const STRAPI_URL = process.env.STRAPI_URL ?? 'http://localhost:1337'
+const STRAPI_TOKEN = process.env.STRAPI_API_TOKEN ?? ''
+
+// ── Types ───────────────────────────────────────────────────
+
+export type ValueBet = {
+  id: number
+  market_name: string
+  line: number
+  side: 'over' | 'under'
+  bookmaker_odd: number
+  edge: number
+  kelly_fraction: number
+  prob_model: number
+  approved: boolean
+  featured: boolean
+}
+
+export type MatchPick = {
+  id: number
+  documentId: string
+  event_id: string
+  home_team: string
+  away_team: string
+  tournament: string
+  match_date: string   // ISO datetime
+  slug: string
+  markets: ValueBet[]
+}
+
+type StrapiList<T> = {
+  data: T[]
+  meta: {
+    pagination: { page: number; pageSize: number; pageCount: number; total: number }
+  }
+}
+
+// ── Helpers ─────────────────────────────────────────────────
+
+function headers(): HeadersInit {
+  return {
+    'Content-Type': 'application/json',
+    Authorization: `Bearer ${STRAPI_TOKEN}`,
+  }
+}
+
+function todayISO(): string {
+  const d = new Date()
+  d.setHours(0, 0, 0, 0)
+  return d.toISOString()
+}
+
+// ── Fetch functions ──────────────────────────────────────────
+
+export async function fetchMatchPicks(): Promise<MatchPick[]> {
+  const params = new URLSearchParams({
+    populate: 'markets',
+    'sort[0]': 'match_date:asc',
+    'filters[match_date][$gte]': todayISO(),
+    'filters[publishedAt][$notNull]': 'true',
+  })
+
+  const res = await fetch(`${STRAPI_URL}/api/match-picks?${params}`, {
+    headers: headers(),
+    next: { revalidate: 3600 },
+  })
+
+  if (!res.ok) throw new Error(`Strapi fetchMatchPicks failed: ${res.status}`)
+
+  const json: StrapiList<MatchPick> = await res.json()
+  return json.data
+}
+
+export async function fetchMatchPickBySlug(slug: string): Promise<MatchPick | null> {
+  const params = new URLSearchParams({
+    populate: 'markets',
+    'filters[slug][$eq]': slug,
+  })
+
+  const res = await fetch(`${STRAPI_URL}/api/match-picks?${params}`, {
+    headers: headers(),
+    next: { revalidate: 3600 },
+  })
+
+  if (!res.ok) throw new Error(`Strapi fetchMatchPickBySlug failed: ${res.status}`)
+
+  const json: StrapiList<MatchPick> = await res.json()
+  return json.data[0] ?? null
+}
