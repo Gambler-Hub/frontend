@@ -1,19 +1,19 @@
 const pillars = [
   {
     icon: '📊',
-    title: 'Data-driven',
+    title: 'Baseado em Dados',
     description:
       'Decisões baseadas em histórico estatístico profundo e múltiplas ligas monitoradas.',
   },
   {
     icon: '⚙️',
-    title: 'Transparent Methodology',
+    title: 'Metodologia Transparente',
     description:
       'Modelos matemáticos auditáveis com lógica probabilística pura e sem caixas-pretas.',
   },
   {
     icon: '🔒',
-    title: 'Secure Transactions',
+    title: 'Transações Seguras',
     description:
       'Seus dados e acesso protegidos com protocolos de segurança rigorosos.',
   },
