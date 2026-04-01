@@ -28,14 +28,6 @@ export default function Footer() {
             >
               Gambling Therapy
             </a>
-            <a
-              href="http://www.conar.org.br/"
-              target="_blank"
-              rel="noreferrer"
-              className="text-on-surface-variant hover:text-primary transition-colors"
-            >
-              CONAR
-            </a>
           </div>
         </div>
         <div className="mt-10 pt-6 border-t border-outline-variant/10 text-center">
