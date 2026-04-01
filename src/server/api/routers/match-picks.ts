@@ -1,11 +1,15 @@
 // src/server/api/routers/match-picks.ts
 import { z } from 'zod'
 import { createTRPCRouter, publicProcedure } from '../trpc'
-import { fetchMatchPicks, fetchMatchPickBySlug } from '@/lib/strapi'
+import { fetchMatchPicks, fetchMatchPicksUpcoming, fetchMatchPickBySlug } from '@/lib/strapi'
 
 export const matchPicksRouter = createTRPCRouter({
   getAll: publicProcedure.query(async () => {
     return fetchMatchPicks()
+  }),
+
+  getUpcoming: publicProcedure.query(async () => {
+    return fetchMatchPicksUpcoming()
   }),
 
   getBySlug: publicProcedure

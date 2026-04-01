@@ -1,5 +1,6 @@
 'use client'
 
+import Link from 'next/link'
 import { useTRPC } from '@/lib/trpc/client'
 import { useSuspenseQuery } from '@tanstack/react-query'
 import MatchCard from './match-card'
@@ -7,6 +8,7 @@ import MatchCard from './match-card'
 export default function MatchGrid() {
   const trpc = useTRPC()
   const { data: picks } = useSuspenseQuery(trpc.matchPicks.getAll.queryOptions())
+  const visible = picks.slice(0, 3)
 
   return (
     <section className="max-w-screen-2xl mx-auto px-6 py-20">
@@ -20,21 +22,21 @@ export default function MatchGrid() {
             Predições de alta precisão baseadas em Big Data
           </p>
         </div>
-        <button
-          disabled
-          className="text-primary/40 text-sm font-bold flex items-center gap-1 cursor-not-allowed"
+        <Link
+          href="/calendario"
+          className="text-primary text-sm font-bold flex items-center gap-1 hover:text-primary/80 transition-colors"
         >
           Ver Calendário Completo →
-        </button>
+        </Link>
       </div>
 
-      {picks.length === 0 ? (
+      {visible.length === 0 ? (
         <p className="text-on-surface-variant text-center py-20">
           Nenhuma partida disponível hoje.
         </p>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {picks.map((pick) => (
+          {visible.map((pick) => (
             <MatchCard key={pick.id} pick={pick} />
           ))}
         </div>

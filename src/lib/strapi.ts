@@ -53,6 +53,13 @@ function todayISO(): string {
   return d.toISOString()
 }
 
+function endOfDayISO(daysFromNow: number): string {
+  const d = new Date()
+  d.setDate(d.getDate() + daysFromNow)
+  d.setHours(23, 59, 59, 999)
+  return d.toISOString()
+}
+
 // ── Fetch functions ──────────────────────────────────────────
 
 export async function fetchMatchPicks(): Promise<MatchPick[]> {
@@ -69,6 +76,27 @@ export async function fetchMatchPicks(): Promise<MatchPick[]> {
   })
 
   if (!res.ok) throw new Error(`Strapi fetchMatchPicks failed: ${res.status}`)
+
+  const json: StrapiList<MatchPick> = await res.json()
+  return json.data
+}
+
+export async function fetchMatchPicksUpcoming(days = 7): Promise<MatchPick[]> {
+  const params = new URLSearchParams({
+    populate: 'markets',
+    'sort[0]': 'match_date:asc',
+    'filters[match_date][$gte]': todayISO(),
+    'filters[match_date][$lte]': endOfDayISO(days),
+    'filters[publishedAt][$notNull]': 'true',
+    'pagination[pageSize]': '100',
+  })
+
+  const res = await fetch(`${STRAPI_URL}/api/match-picks?${params}`, {
+    headers: headers(),
+    next: { revalidate: 3600 },
+  })
+
+  if (!res.ok) throw new Error(`Strapi fetchMatchPicksUpcoming failed: ${res.status}`)
 
   const json: StrapiList<MatchPick> = await res.json()
   return json.data
