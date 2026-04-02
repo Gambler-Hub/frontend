@@ -5,7 +5,7 @@ import CalendarView from '@/components/calendar-view'
 
 export const metadata: Metadata = {
   title: 'Calendário de Partidas | Portal do Apostador',
-  description: 'O oráculo das apostas futuras. Analise o volume e a confiança da IA para os próximos confrontos.',
+  description: 'O oráculo das apostas futuras. Analise a confiança da IA para os próximos confrontos.',
 }
 
 export default async function CalendarioPage() {
@@ -23,7 +23,7 @@ export default async function CalendarioPage() {
               CALENDÁRIO DE <span className="text-primary">PARTIDAS</span>
             </h1>
             <p className="text-on-surface-variant max-w-md text-base md:text-lg">
-              O oráculo das apostas futuras. Analise o volume e a confiança da IA para os próximos confrontos.
+              O oráculo das apostas futuras. Analise a confiança da IA para os próximos confrontos.
             </p>
           </div>
         </div>

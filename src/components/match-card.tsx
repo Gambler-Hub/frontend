@@ -1,6 +1,6 @@
 // src/components/match-card.tsx
+import Link from 'next/link'
 import { Badge } from '@/components/ui/badge'
-import { Button } from '@/components/ui/button'
 import { Progress } from '@/components/ui/progress'
 import { formatMarketName, formatBetLine, formatTournament } from '@/lib/format'
 import type { MatchPick, ValueBet } from '@/lib/strapi'
@@ -66,7 +66,7 @@ export default function MatchCard({ pick }: { pick: MatchPick }) {
             IA Insight
           </p>
           <p className="text-sm font-semibold text-on-surface mb-3">
-            {formatMarketName(bet.market_name)} — {formatBetLine(bet.side, bet.line)} @ {bet.bookmaker_odd.toFixed(2)}
+            {formatMarketName(bet.market_name, bet.team_label)} — {formatBetLine(bet.side, bet.line)} @ {bet.bookmaker_odd.toFixed(2)}
           </p>
           <div className="flex justify-between text-xs text-on-surface-variant mb-1">
             <span>Confiança</span>
@@ -84,13 +84,12 @@ export default function MatchCard({ pick }: { pick: MatchPick }) {
       )}
 
       {/* CTA */}
-      <Button
-        disabled
-        variant="outline"
-        className="w-full border-outline-variant/20 text-on-surface bg-surface-container-high hover:border-primary/40 text-sm"
+      <Link
+        href={`/partidas/${pick.slug}`}
+        className="block w-full text-center border border-outline-variant/20 text-on-surface bg-surface-container-high hover:border-primary/40 hover:text-primary rounded-md py-2 px-4 text-sm font-medium transition-colors"
       >
         Análise Completa
-      </Button>
+      </Link>
     </div>
   )
 }

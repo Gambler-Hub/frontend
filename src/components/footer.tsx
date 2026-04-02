@@ -8,7 +8,7 @@ export default function Footer() {
               Portal do Apostador
             </span>
             <p className="text-xs uppercase tracking-widest text-on-surface-variant opacity-70">
-              © 2025 Portal do Apostador. Todos os direitos reservados.
+              © 2026 Portal do Apostador. Todos os direitos reservados.
             </p>
             <div className="flex items-center gap-3 mt-2">
               <div className="w-8 h-8 rounded-full border-2 border-outline-variant bg-surface-container flex items-center justify-center">

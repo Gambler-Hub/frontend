@@ -9,6 +9,7 @@ const STRAPI_TOKEN = process.env.STRAPI_API_TOKEN ?? ''
 export type ValueBet = {
   id: number
   market_name: string
+  team_label: string | null
   line: number
   side: 'over' | 'under'
   bookmaker_odd: number

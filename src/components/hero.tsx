@@ -112,7 +112,7 @@ function HeroContent() {
                   <div className="flex justify-between items-center text-sm">
                     <span className="text-on-surface-variant">Mercado Sugerido</span>
                     <span className="text-primary font-bold text-right max-w-[60%]">
-                      {formatMarketName(bet.market_name)} — {formatBetLine(bet.side, bet.line)}
+                      {formatMarketName(bet.market_name, bet.team_label)} — {formatBetLine(bet.side, bet.line)}
                     </span>
                   </div>
                   <Progress

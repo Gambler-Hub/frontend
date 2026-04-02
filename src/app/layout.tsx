@@ -2,6 +2,7 @@
 import type { Metadata } from 'next'
 import { Inter, Space_Grotesk } from 'next/font/google'
 import { TRPCReactProvider } from '@/lib/trpc/client'
+import { ClarityScript } from '@/components/clarity'
 import Navbar from '@/components/navbar'
 import Footer from '@/components/footer'
 import './globals.css'
@@ -19,6 +20,9 @@ const inter = Inter({
 export const metadata: Metadata = {
   title: 'Portal do Apostador',
   description: 'Análise preditiva de apostas esportivas baseada em dados',
+  icons: {
+    icon: '/favicon.png',
+  },
 }
 
 export default function RootLayout({
@@ -32,6 +36,7 @@ export default function RootLayout({
       className={`dark ${spaceGrotesk.variable} ${inter.variable}`}
     >
       <body className="min-h-screen bg-background text-on-surface font-body antialiased">
+        <ClarityScript />
         <TRPCReactProvider>
           <Navbar />
           <main className="pt-16">{children}</main>

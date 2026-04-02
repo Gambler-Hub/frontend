@@ -1,21 +1,24 @@
 // src/lib/format.ts
 
+// Keys are FootballMarket enum VALUES (stored in Strapi), not member names.
 const MARKET_LABELS: Record<string, string> = {
-  MATCH_TOTAL_FOULS:      'Total de Faltas',
-  MATCH_CARDS_OU:         'Cartões O/U',
-  MATCH_CORNERS_OU:       'Escanteios O/U',
-  TOTAL_GOALS_OVER_UNDER: 'Gols O/U',
-  MATCH_TOTAL_SHOTS:      'Chutes O/U',
-  MATCH_SOT_OU:           'Chutes a Gol O/U',
-  MATCH_OFFSIDES_OU:      'Impedimentos O/U',
-  MATCH_SAVES_OU:         'Defesas O/U',
-  MATCH_WOODWORK_OU:      'Trave O/U',
-  TEAM_TOTAL_FOULS:       'Faltas do Time',
-  TEAM_TOTAL_SHOTS:       'Chutes do Time',
-  TEAM_SOT_OU:            'Chutes a Gol do Time',
-  TEAM_CORNERS_OU:        'Escanteios do Time',
-  TEAM_CARDS_OU:          'Cartões do Time',
-  TEAM_TOTAL_GOALS:       'Gols do Time',
+  // Mercados de partida (match-level)
+  'O/U':              'Total de Gols',
+  'MATCH_FOULS_OU':   'Total de Faltas',
+  'MATCH_CARDS_OU':   'Total de Cartões',
+  'MATCH_CORNERS_OU': 'Total de Escanteios',
+  'MATCH_SHOTS_OU':   'Total de Chutes',
+  'MATCH_SOT_OU':     'Chutes no Gol',
+  'MATCH_OFFSIDES_OU':'Total de Impedimentos',
+  'MATCH_SAVES_OU':   'Total de Defesas',
+  'MATCH_WOODWORK_OU':'Acertos na Trave',
+  // Mercados de time (team-level) — combinados com team_label: "Gols (Botafogo)"
+  'TEAM_OU':          'Gols',
+  'TEAM_FOULS_OU':    'Faltas',
+  'TEAM_SHOTS_OU':    'Chutes',
+  'TEAM_SOT_OU':      'Chutes no Gol',
+  'TEAM_CORNERS_OU':  'Escanteios',
+  'TEAM_CARDS_OU':    'Cartões',
 }
 
 const TOURNAMENT_LABELS: Record<string, string> = {
@@ -29,17 +32,12 @@ const TOURNAMENT_LABELS: Record<string, string> = {
 }
 
 /**
- * Formats a raw market name (e.g. "MATCH_TOTAL_FOULS [HOME]")
- * into a human-readable Portuguese label.
+ * Formats a market name into a human-readable Portuguese label.
+ * Pass `teamLabel` (the actual team name) for TEAM_* markets.
  */
-export function formatMarketName(raw: string): string {
-  // Strip team side suffix like " [HOME]" or " [AWAY]"
-  const [base, side] = raw.split(' [')
-  const label = MARKET_LABELS[base] ?? base.replace(/_/g, ' ').toLowerCase()
-  if (side) {
-    const teamSide = side.replace(']', '') === 'HOME' ? 'Casa' : 'Fora'
-    return `${label} (${teamSide})`
-  }
+export function formatMarketName(raw: string, teamLabel?: string | null): string {
+  const label = MARKET_LABELS[raw] ?? raw.replace(/_/g, ' ').toLowerCase()
+  if (teamLabel) return `${label} (${teamLabel})`
   return label
 }
 

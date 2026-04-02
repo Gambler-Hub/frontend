@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useMemo } from 'react'
+import Link from 'next/link'
 import { useSuspenseQuery } from '@tanstack/react-query'
 import { useTRPC } from '@/lib/trpc/client'
 import { formatMarketName, formatTournament } from '@/lib/format'
@@ -52,13 +53,6 @@ function bestFeaturedBet(markets: ValueBet[]): ValueBet | undefined {
 
 function powerScore(bet: ValueBet): string {
   return Math.min(bet.prob_model * 10, 10).toFixed(1)
-}
-
-function volumeLabel(kelly: number): { label: string; className: string } {
-  if (kelly > 0.1) return { label: 'MAX', className: 'text-secondary' }
-  if (kelly > 0.05) return { label: 'HIGH', className: 'text-primary' }
-  if (kelly > 0.02) return { label: 'MEDIUM', className: 'text-on-surface' }
-  return { label: 'LOW', className: 'text-on-surface-variant' }
 }
 
 function scoreBorderClass(score: number): string {
@@ -254,12 +248,12 @@ export default function CalendarView() {
               {tournamentPicks.map((pick) => {
                 const bet = bestFeaturedBet(pick.markets)
                 const score = bet ? parseFloat(powerScore(bet)) : 0
-                const vol = bet ? volumeLabel(bet.kelly_fraction) : null
 
                 return (
-                  <div
+                  <Link
                     key={pick.id}
-                    className="glass-card p-6 rounded-xl flex flex-col md:flex-row items-center gap-6 hover:shadow-[0_0_30px_rgba(83,221,252,0.05)] transition-all"
+                    href={`/partidas/${pick.slug}`}
+                    className="glass-card p-6 rounded-xl flex flex-col md:flex-row items-center gap-6 hover:shadow-[0_0_30px_rgba(83,221,252,0.05)] hover:border-primary/20 border border-transparent transition-all"
                   >
                     {/* Time */}
                     <div className="flex flex-col items-center md:items-start min-w-[80px]">
@@ -317,13 +311,7 @@ export default function CalendarView() {
                           <span className="text-[10px] text-on-surface-variant">TREND</span>
                           <span className="text-[10px] font-bold text-on-surface truncate max-w-[110px]">
                             {bet.side.toUpperCase()} {bet.line} —{' '}
-                            {formatMarketName(bet.market_name).slice(0, 10).toUpperCase()}
-                          </span>
-                        </div>
-                        <div className="flex items-center justify-between">
-                          <span className="text-[10px] text-on-surface-variant">VOLUME</span>
-                          <span className={`text-[10px] font-bold ${vol?.className}`}>
-                            {vol?.label}
+                            {formatMarketName(bet.market_name, bet.team_label).slice(0, 10).toUpperCase()}
                           </span>
                         </div>
                       </div>
@@ -334,7 +322,7 @@ export default function CalendarView() {
                         </p>
                       </div>
                     )}
-                  </div>
+                  </Link>
                 )
               })}
             </section>
