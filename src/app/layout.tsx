@@ -20,9 +20,6 @@ const inter = Inter({
 export const metadata: Metadata = {
   title: 'Portal do Apostador',
   description: 'Análise preditiva de apostas esportivas baseada em dados',
-  icons: {
-    icon: '/favicon.png',
-  },
 }
 
 export default function RootLayout({
