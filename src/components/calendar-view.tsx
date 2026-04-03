@@ -6,41 +6,37 @@ import { useSuspenseQuery } from '@tanstack/react-query'
 import { useTRPC } from '@/lib/trpc/client'
 import { formatMarketName, formatTournament } from '@/lib/format'
 import type { ValueBet } from '@/lib/strapi'
+import { addDays as dfAddDays, parseISO } from 'date-fns'
+import { formatInTimeZone } from 'date-fns-tz'
+import { ptBR } from 'date-fns/locale'
 
 // ── Date utilities ───────────────────────────────────────────
 
+const TZ = 'America/Sao_Paulo'
+
 function toLocalDateStr(iso: string): string {
-  // Parse the ISO string and extract local date YYYY-MM-DD
-  const d = new Date(iso)
-  return d.toLocaleDateString('sv-SE', { timeZone: 'America/Sao_Paulo' })
+  return formatInTimeZone(new Date(iso), TZ, 'yyyy-MM-dd')
 }
 
 function todayStr(): string {
-  return new Date().toLocaleDateString('sv-SE', { timeZone: 'America/Sao_Paulo' })
+  return formatInTimeZone(new Date(), TZ, 'yyyy-MM-dd')
 }
 
 function addDays(dateStr: string, n: number): string {
-  const d = new Date(dateStr + 'T12:00:00')
-  d.setDate(d.getDate() + n)
-  return d.toLocaleDateString('sv-SE')
+  return formatInTimeZone(dfAddDays(parseISO(dateStr + 'T12:00:00'), n), TZ, 'yyyy-MM-dd')
 }
 
 function formatTabLabel(dateStr: string, today: string): string {
   const tomorrow = addDays(today, 1)
   if (dateStr === today) return 'Hoje'
   if (dateStr === tomorrow) return 'Amanhã'
-  const d = new Date(dateStr + 'T12:00:00')
-  const weekday = d.toLocaleDateString('pt-BR', { weekday: 'short' }).replace('.', '')
-  const day = d.toLocaleDateString('pt-BR', { day: '2-digit', month: 'short' }).replace('.', '')
-  return `${weekday.charAt(0).toUpperCase() + weekday.slice(1)}, ${day}`
+  const d = parseISO(dateStr + 'T12:00:00')
+  const label = formatInTimeZone(d, TZ, 'EEE, dd MMM', { locale: ptBR })
+  return label.charAt(0).toUpperCase() + label.slice(1)
 }
 
 function matchTime(iso: string): string {
-  return new Date(iso).toLocaleTimeString('pt-BR', {
-    hour: '2-digit',
-    minute: '2-digit',
-    timeZone: 'America/Sao_Paulo',
-  })
+  return formatInTimeZone(new Date(iso), TZ, 'HH:mm')
 }
 
 // ── Pick utilities ───────────────────────────────────────────

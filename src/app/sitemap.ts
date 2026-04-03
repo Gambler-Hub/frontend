@@ -1,4 +1,5 @@
 import type { MetadataRoute } from 'next'
+import { parseISO } from 'date-fns'
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? 'http://localhost:3000'
 const STRAPI_URL = process.env.STRAPI_URL ?? 'http://localhost:1337'
@@ -52,7 +53,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   const dynamicRoutes: MetadataRoute.Sitemap = picks.map(({ slug, updatedAt }) => ({
     url: `${SITE_URL}/partidas/${slug}`,
-    lastModified: new Date(updatedAt),
+    lastModified: parseISO(updatedAt),
     changeFrequency: 'weekly',
     priority: 0.6,
   }))

@@ -4,6 +4,7 @@ import { Badge } from '@/components/ui/badge'
 import { Progress } from '@/components/ui/progress'
 import { formatMarketName, formatBetLine, formatTournament } from '@/lib/format'
 import type { MatchPick, ValueBet } from '@/lib/strapi'
+import { formatInTimeZone } from 'date-fns-tz'
 
 function bestFeaturedBet(markets: ValueBet[]): ValueBet | undefined {
   return markets
@@ -12,11 +13,7 @@ function bestFeaturedBet(markets: ValueBet[]): ValueBet | undefined {
 }
 
 function matchTime(isoDate: string): string {
-  return new Date(isoDate).toLocaleTimeString('pt-BR', {
-    hour: '2-digit',
-    minute: '2-digit',
-    timeZone: 'America/Sao_Paulo',
-  })
+  return formatInTimeZone(new Date(isoDate), 'America/Sao_Paulo', 'HH:mm')
 }
 
 export default function MatchCard({ pick }: { pick: MatchPick }) {

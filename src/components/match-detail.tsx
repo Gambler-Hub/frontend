@@ -6,23 +6,17 @@ import { Progress } from '@/components/ui/progress'
 import { Table, TableHeader, TableBody, TableHead, TableRow, TableCell } from '@/components/ui/table'
 import { formatMarketName, formatBetLine, formatTournament } from '@/lib/format'
 import type { MatchPick, ValueBet } from '@/lib/strapi'
+import { formatInTimeZone } from 'date-fns-tz'
+import { ptBR } from 'date-fns/locale'
 
 // ── Utilities ────────────────────────────────────────────────
 
 function matchDateTime(iso: string): { date: string; time: string } {
   const d = new Date(iso)
+  const tz = 'America/Sao_Paulo'
   return {
-    date: d.toLocaleDateString('pt-BR', {
-      weekday: 'long',
-      day: '2-digit',
-      month: 'long',
-      timeZone: 'America/Sao_Paulo',
-    }),
-    time: d.toLocaleTimeString('pt-BR', {
-      hour: '2-digit',
-      minute: '2-digit',
-      timeZone: 'America/Sao_Paulo',
-    }),
+    date: formatInTimeZone(d, tz, "EEEE, dd 'de' MMMM", { locale: ptBR }),
+    time: formatInTimeZone(d, tz, 'HH:mm'),
   }
 }
 

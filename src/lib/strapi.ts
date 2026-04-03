@@ -1,5 +1,6 @@
 // src/lib/strapi.ts
 import 'server-only'
+import { subMinutes, addDays, endOfDay } from 'date-fns'
 
 const STRAPI_URL = process.env.STRAPI_URL ?? 'http://localhost:1337'
 const STRAPI_TOKEN = process.env.STRAPI_API_TOKEN ?? ''
@@ -48,17 +49,12 @@ function headers(): HeadersInit {
   }
 }
 
-function todayISO(): string {
-  const d = new Date()
-  d.setHours(0, 0, 0, 0)
-  return d.toISOString()
+function cutoffISO(): string {
+  return subMinutes(new Date(), 90).toISOString()
 }
 
 function endOfDayISO(daysFromNow: number): string {
-  const d = new Date()
-  d.setDate(d.getDate() + daysFromNow)
-  d.setHours(23, 59, 59, 999)
-  return d.toISOString()
+  return endOfDay(addDays(new Date(), daysFromNow)).toISOString()
 }
 
 // ── Fetch functions ──────────────────────────────────────────
@@ -67,7 +63,7 @@ export async function fetchMatchPicks(): Promise<MatchPick[]> {
   const params = new URLSearchParams({
     populate: 'markets',
     'sort[0]': 'match_date:asc',
-    'filters[match_date][$gte]': todayISO(),
+    'filters[match_date][$gte]': cutoffISO(),
     'filters[publishedAt][$notNull]': 'true',
   })
 
@@ -86,7 +82,7 @@ export async function fetchMatchPicksUpcoming(days = 7): Promise<MatchPick[]> {
   const params = new URLSearchParams({
     populate: 'markets',
     'sort[0]': 'match_date:asc',
-    'filters[match_date][$gte]': todayISO(),
+    'filters[match_date][$gte]': cutoffISO(),
     'filters[match_date][$lte]': endOfDayISO(days),
     'filters[publishedAt][$notNull]': 'true',
     'pagination[pageSize]': '100',
