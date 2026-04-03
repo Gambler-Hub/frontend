@@ -103,6 +103,7 @@ export async function fetchMatchPickSlugs(): Promise<string[]> {
   const params = new URLSearchParams({
     'fields[0]': 'slug',
     'filters[publishedAt][$notNull]': 'true',
+    'sort[0]': 'createdAt:desc',
     'pagination[pageSize]': '500',
   })
   const res = await fetch(`${STRAPI_URL}/api/match-picks?${params}`, {

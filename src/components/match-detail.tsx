@@ -161,8 +161,58 @@ function MatchDetailContent({ slug }: { slug: string }) {
 
       {/* ── Content grid ─────────────────────────────────── */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-        {/* Left: all markets */}
-        <div className="lg:col-span-8 space-y-8">
+        {/* Right: featured cards + disclaimer — comes first in DOM so it renders above all-markets on mobile */}
+        <div className="lg:col-span-4 lg:col-start-9">
+          <div className="sticky top-24 space-y-6">
+            <h3 className="font-headline text-xl font-bold flex items-center gap-2">
+              <span className="text-secondary">✦</span>
+              Mercados Recomendados
+            </h3>
+
+            {featuredMarkets.length > 0 ? (
+              featuredMarkets.map((bet) => (
+                <FeaturedMarketCard key={bet.id} bet={bet} />
+              ))
+            ) : (
+              <div className="glass-card rounded-xl p-6 text-center">
+                <p className="text-sm text-on-surface-variant">Sem picks em destaque.</p>
+              </div>
+            )}
+
+            {/* Odds disclaimer */}
+            <p className="text-[10px] text-on-surface-variant/50 leading-relaxed px-1">
+              As odds exibidas são as disponíveis no momento da análise e podem sofrer alterações.
+              Verifique a odd atual antes de apostar.
+            </p>
+
+            {/* AI Oracle insight (derived from data) */}
+            {topBet && (
+              <div className="bg-surface-container-highest rounded-xl p-5 relative overflow-hidden border border-outline-variant/10">
+                <h4 className="font-headline text-sm font-bold text-primary mb-3 uppercase tracking-wider">
+                  Oracle AI Insight
+                </h4>
+                <p className="text-xs italic text-on-surface-variant leading-relaxed">
+                  "O modelo detectou edge positivo de{' '}
+                  <span className="text-secondary font-semibold not-italic">
+                    +{(topBet.edge * 100).toFixed(1)}%
+                  </span>{' '}
+                  no mercado de{' '}
+                  <span className="text-on-surface font-semibold not-italic">
+                    {formatMarketName(topBet.market_name)}
+                  </span>
+                  . Probabilidade do modelo:{' '}
+                  <span className="text-primary font-semibold not-italic">
+                    {Math.round(topBet.prob_model * 100)}%
+                  </span>
+                  ."
+                </p>
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Left: all markets — second in DOM but placed left on desktop via col-start-1 */}
+        <div className="lg:col-span-8 lg:col-start-1 lg:row-start-1 space-y-8">
           {/* All other approved markets */}
           {allOtherMarkets.length > 0 && (
             <div className="space-y-4">
@@ -222,56 +272,6 @@ function MatchDetailContent({ slug }: { slug: string }) {
               <p className="text-on-surface-variant">Nenhum mercado aprovado disponível para esta partida.</p>
             </div>
           )}
-        </div>
-
-        {/* Right: featured cards + disclaimer */}
-        <div className="lg:col-span-4">
-          <div className="sticky top-24 space-y-6">
-            <h3 className="font-headline text-xl font-bold flex items-center gap-2">
-              <span className="text-secondary">✦</span>
-              Mercados Recomendados
-            </h3>
-
-            {featuredMarkets.length > 0 ? (
-              featuredMarkets.map((bet) => (
-                <FeaturedMarketCard key={bet.id} bet={bet} />
-              ))
-            ) : (
-              <div className="glass-card rounded-xl p-6 text-center">
-                <p className="text-sm text-on-surface-variant">Sem picks em destaque.</p>
-              </div>
-            )}
-
-            {/* Odds disclaimer */}
-            <p className="text-[10px] text-on-surface-variant/50 leading-relaxed px-1">
-              As odds exibidas são as disponíveis no momento da análise e podem sofrer alterações.
-              Verifique a odd atual antes de apostar.
-            </p>
-
-            {/* AI Oracle insight (derived from data) */}
-            {topBet && (
-              <div className="bg-surface-container-highest rounded-xl p-5 relative overflow-hidden border border-outline-variant/10">
-                <h4 className="font-headline text-sm font-bold text-primary mb-3 uppercase tracking-wider">
-                  Oracle AI Insight
-                </h4>
-                <p className="text-xs italic text-on-surface-variant leading-relaxed">
-                  "O modelo detectou edge positivo de{' '}
-                  <span className="text-secondary font-semibold not-italic">
-                    +{(topBet.edge * 100).toFixed(1)}%
-                  </span>{' '}
-                  no mercado de{' '}
-                  <span className="text-on-surface font-semibold not-italic">
-                    {formatMarketName(topBet.market_name)}
-                  </span>
-                  . Probabilidade do modelo:{' '}
-                  <span className="text-primary font-semibold not-italic">
-                    {Math.round(topBet.prob_model * 100)}%
-                  </span>
-                  ."
-                </p>
-              </div>
-            )}
-          </div>
         </div>
       </div>
     </div>
