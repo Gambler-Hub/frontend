@@ -99,6 +99,21 @@ export async function fetchMatchPicksUpcoming(days = 7): Promise<MatchPick[]> {
   return json.data
 }
 
+export async function fetchMatchPickSlugs(): Promise<string[]> {
+  const params = new URLSearchParams({
+    'fields[0]': 'slug',
+    'filters[publishedAt][$notNull]': 'true',
+    'pagination[pageSize]': '500',
+  })
+  const res = await fetch(`${STRAPI_URL}/api/match-picks?${params}`, {
+    headers: headers(),
+    next: { revalidate: 3600 },
+  })
+  if (!res.ok) return []
+  const json = await res.json() as { data: { slug: string }[] }
+  return json.data.map((item) => item.slug)
+}
+
 export async function fetchMatchPickBySlug(slug: string): Promise<MatchPick | null> {
   const params = new URLSearchParams({
     populate: 'markets',
