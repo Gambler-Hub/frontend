@@ -1,5 +1,6 @@
 'use client'
 
+import Image from 'next/image'
 import { useTRPC } from '@/lib/trpc/client'
 import { useSuspenseQuery } from '@tanstack/react-query'
 import { Progress } from '@/components/ui/progress'
@@ -72,24 +73,32 @@ function HeroContent() {
               {/* Teams */}
               <div className="flex items-center justify-between">
                 <div className="flex flex-col items-center gap-1">
-                  <div className="w-14 h-14 rounded-full bg-surface-container flex items-center justify-center">
-                    <span className="text-sm font-bold text-on-surface uppercase">
-                      {pick.home_team.slice(0, 3)}
-                    </span>
-                  </div>
+                  {pick.home_team_logo ? (
+                    <Image src={pick.home_team_logo} alt={pick.home_team} width={56} height={56} className="object-contain" />
+                  ) : (
+                    <div className="w-14 h-14 rounded-full bg-surface-container flex items-center justify-center">
+                      <span className="text-sm font-bold text-on-surface uppercase">
+                        {pick.home_team.slice(0, 3)}
+                      </span>
+                    </div>
+                  )}
                   <span className="text-xs font-bold text-on-surface uppercase">
-                    {pick.home_team.split(' ')[0]}
+                    {pick.home_team}
                   </span>
                 </div>
                 <span className="text-2xl font-black text-on-surface-variant italic">VS</span>
                 <div className="flex flex-col items-center gap-1">
-                  <div className="w-14 h-14 rounded-full bg-surface-container flex items-center justify-center">
-                    <span className="text-sm font-bold text-on-surface uppercase">
-                      {pick.away_team.slice(0, 3)}
-                    </span>
-                  </div>
+                  {pick.away_team_logo ? (
+                    <Image src={pick.away_team_logo} alt={pick.away_team} width={56} height={56} className="object-contain" />
+                  ) : (
+                    <div className="w-14 h-14 rounded-full bg-surface-container flex items-center justify-center">
+                      <span className="text-sm font-bold text-on-surface uppercase">
+                        {pick.away_team.slice(0, 3)}
+                      </span>
+                    </div>
+                  )}
                   <span className="text-xs font-bold text-on-surface uppercase">
-                    {pick.away_team.split(' ')[0]}
+                    {pick.away_team}
                   </span>
                 </div>
               </div>

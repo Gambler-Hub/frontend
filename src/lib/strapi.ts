@@ -27,6 +27,8 @@ export type MatchPick = {
   event_id: string
   home_team: string
   away_team: string
+  home_team_logo: string | null
+  away_team_logo: string | null
   tournament: string
   match_date: string   // ISO datetime
   slug: string

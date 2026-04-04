@@ -1,4 +1,5 @@
 // src/components/match-card.tsx
+import Image from 'next/image'
 import Link from 'next/link'
 import { Badge } from '@/components/ui/badge'
 import { Progress } from '@/components/ui/progress'
@@ -38,20 +39,28 @@ export default function MatchCard({ pick }: { pick: MatchPick }) {
       {/* Teams */}
       <div className="flex items-center justify-between mb-8">
         <div className="flex flex-col items-center gap-1 flex-1">
-          <div className="w-10 h-10 rounded-lg bg-surface-container-high flex items-center justify-center">
-            <span className="text-xs font-bold text-on-surface-variant uppercase">
-              {pick.home_team.slice(0, 3)}
-            </span>
-          </div>
+          {pick.home_team_logo ? (
+            <Image src={pick.home_team_logo} alt={pick.home_team} width={40} height={40} className="object-contain" />
+          ) : (
+            <div className="w-10 h-10 rounded-lg bg-surface-container-high flex items-center justify-center">
+              <span className="text-xs font-bold text-on-surface-variant uppercase">
+                {pick.home_team.slice(0, 3)}
+              </span>
+            </div>
+          )}
           <span className="text-sm font-bold text-center">{pick.home_team}</span>
         </div>
         <span className="text-lg font-black text-outline-variant px-4">×</span>
         <div className="flex flex-col items-center gap-1 flex-1">
-          <div className="w-10 h-10 rounded-lg bg-surface-container-high flex items-center justify-center">
-            <span className="text-xs font-bold text-on-surface-variant uppercase">
-              {pick.away_team.slice(0, 3)}
-            </span>
-          </div>
+          {pick.away_team_logo ? (
+            <Image src={pick.away_team_logo} alt={pick.away_team} width={40} height={40} className="object-contain" />
+          ) : (
+            <div className="w-10 h-10 rounded-lg bg-surface-container-high flex items-center justify-center">
+              <span className="text-xs font-bold text-on-surface-variant uppercase">
+                {pick.away_team.slice(0, 3)}
+              </span>
+            </div>
+          )}
           <span className="text-sm font-bold text-center">{pick.away_team}</span>
         </div>
       </div>

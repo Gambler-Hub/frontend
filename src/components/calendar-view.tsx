@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useMemo } from 'react'
+import Image from 'next/image'
 import Link from 'next/link'
 import { useSuspenseQuery } from '@tanstack/react-query'
 import { useTRPC } from '@/lib/trpc/client'
@@ -267,21 +268,29 @@ export default function CalendarView() {
                         <span className="font-headline text-base md:text-lg font-bold">
                           {pick.home_team}
                         </span>
-                        <div className="w-12 h-12 bg-surface-container rounded-full flex items-center justify-center border border-outline-variant/10 shrink-0">
-                          <span className="text-xs font-bold text-on-surface-variant uppercase">
-                            {pick.home_team.slice(0, 3)}
-                          </span>
-                        </div>
+                        {pick.home_team_logo ? (
+                          <Image src={pick.home_team_logo} alt={pick.home_team} width={48} height={48} className="object-contain shrink-0" />
+                        ) : (
+                          <div className="w-12 h-12 bg-surface-container rounded-full flex items-center justify-center border border-outline-variant/10 shrink-0">
+                            <span className="text-xs font-bold text-on-surface-variant uppercase">
+                              {pick.home_team.slice(0, 3)}
+                            </span>
+                          </div>
+                        )}
                       </div>
                       <div className="px-4 text-on-surface-variant font-headline font-bold italic opacity-20 text-lg">
                         VS
                       </div>
                       <div className="flex flex-1 items-center justify-start gap-4">
-                        <div className="w-12 h-12 bg-surface-container rounded-full flex items-center justify-center border border-outline-variant/10 shrink-0">
-                          <span className="text-xs font-bold text-on-surface-variant uppercase">
-                            {pick.away_team.slice(0, 3)}
-                          </span>
-                        </div>
+                        {pick.away_team_logo ? (
+                          <Image src={pick.away_team_logo} alt={pick.away_team} width={48} height={48} className="object-contain shrink-0" />
+                        ) : (
+                          <div className="w-12 h-12 bg-surface-container rounded-full flex items-center justify-center border border-outline-variant/10 shrink-0">
+                            <span className="text-xs font-bold text-on-surface-variant uppercase">
+                              {pick.away_team.slice(0, 3)}
+                            </span>
+                          </div>
+                        )}
                         <span className="font-headline text-base md:text-lg font-bold">
                           {pick.away_team}
                         </span>

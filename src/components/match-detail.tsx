@@ -1,5 +1,6 @@
 'use client'
 
+import Image from 'next/image'
 import { useTRPC } from '@/lib/trpc/client'
 import { useSuspenseQuery } from '@tanstack/react-query'
 import { Progress } from '@/components/ui/progress'
@@ -32,16 +33,20 @@ function edgeColor(edge: number): string {
 
 // ── Sub-components ────────────────────────────────────────────
 
-function TeamBadge({ name, side }: { name: string; side: 'home' | 'away' }) {
+function TeamBadge({ name, side, logoUrl }: { name: string; side: 'home' | 'away'; logoUrl?: string | null }) {
   return (
     <div
       className={`flex flex-col items-center gap-3 ${side === 'home' ? 'md:items-end md:text-right' : 'md:items-start md:text-left'}`}
     >
-      <div className="w-20 h-20 rounded-2xl bg-surface-container flex items-center justify-center border border-outline-variant/20 shrink-0">
-        <span className="text-xl font-black text-on-surface-variant uppercase font-headline">
-          {name.slice(0, 3)}
-        </span>
-      </div>
+      {logoUrl ? (
+        <Image src={logoUrl} alt={name} width={80} height={80} className="object-contain shrink-0" />
+      ) : (
+        <div className="w-20 h-20 rounded-2xl bg-surface-container flex items-center justify-center border border-outline-variant/20 shrink-0">
+          <span className="text-xl font-black text-on-surface-variant uppercase font-headline">
+            {name.slice(0, 3)}
+          </span>
+        </div>
+      )}
       <h2 className="font-headline text-3xl md:text-4xl font-bold tracking-tight text-on-surface">
         {name}
       </h2>
@@ -121,7 +126,7 @@ function MatchDetailContent({ slug }: { slug: string }) {
         <div className="absolute inset-0 ai-glow pointer-events-none" />
         <div className="relative z-10 grid grid-cols-1 md:grid-cols-3 items-center gap-8">
           {/* Home team */}
-          <TeamBadge name={pick.home_team} side="home" />
+          <TeamBadge name={pick.home_team} side="home" logoUrl={pick.home_team_logo} />
 
           {/* Center: match info */}
           <div className="flex flex-col items-center text-center space-y-4">
@@ -155,7 +160,7 @@ function MatchDetailContent({ slug }: { slug: string }) {
           </div>
 
           {/* Away team */}
-          <TeamBadge name={pick.away_team} side="away" />
+          <TeamBadge name={pick.away_team} side="away" logoUrl={pick.away_team_logo} />
         </div>
       </section>
 
