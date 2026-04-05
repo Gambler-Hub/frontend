@@ -263,35 +263,35 @@ export default function CalendarView() {
                     </div>
 
                     {/* Teams */}
-                    <div className="flex flex-1 items-center justify-between w-full gap-4">
-                      <div className="flex flex-1 items-center justify-end gap-4 text-right">
-                        <span className="font-headline text-base md:text-lg font-bold">
+                    <div className="flex flex-1 items-center justify-between w-full gap-2 min-w-0">
+                      <div className="flex flex-1 items-center justify-end gap-2 text-right min-w-0">
+                        <span className="font-headline text-base md:text-lg font-bold truncate min-w-0">
                           {pick.home_team}
                         </span>
                         {pick.home_team_logo ? (
-                          <Image src={pick.home_team_logo} alt={pick.home_team} width={48} height={48} className="object-contain shrink-0" />
+                          <Image src={pick.home_team_logo} alt={pick.home_team} width={40} height={40} className="object-contain shrink-0" />
                         ) : (
-                          <div className="w-12 h-12 bg-surface-container rounded-full flex items-center justify-center border border-outline-variant/10 shrink-0">
+                          <div className="w-10 h-10 bg-surface-container rounded-full flex items-center justify-center border border-outline-variant/10 shrink-0">
                             <span className="text-xs font-bold text-on-surface-variant uppercase">
                               {pick.home_team.slice(0, 3)}
                             </span>
                           </div>
                         )}
                       </div>
-                      <div className="px-4 text-on-surface-variant font-headline font-bold italic opacity-20 text-lg">
+                      <div className="px-2 text-on-surface-variant font-headline font-bold italic opacity-20 text-lg shrink-0">
                         VS
                       </div>
-                      <div className="flex flex-1 items-center justify-start gap-4">
+                      <div className="flex flex-1 items-center justify-start gap-2 min-w-0">
                         {pick.away_team_logo ? (
-                          <Image src={pick.away_team_logo} alt={pick.away_team} width={48} height={48} className="object-contain shrink-0" />
+                          <Image src={pick.away_team_logo} alt={pick.away_team} width={40} height={40} className="object-contain shrink-0" />
                         ) : (
-                          <div className="w-12 h-12 bg-surface-container rounded-full flex items-center justify-center border border-outline-variant/10 shrink-0">
+                          <div className="w-10 h-10 bg-surface-container rounded-full flex items-center justify-center border border-outline-variant/10 shrink-0">
                             <span className="text-xs font-bold text-on-surface-variant uppercase">
                               {pick.away_team.slice(0, 3)}
                             </span>
                           </div>
                         )}
-                        <span className="font-headline text-base md:text-lg font-bold">
+                        <span className="font-headline text-base md:text-lg font-bold truncate min-w-0">
                           {pick.away_team}
                         </span>
                       </div>
