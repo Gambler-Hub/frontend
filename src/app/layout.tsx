@@ -1,6 +1,7 @@
 // src/app/layout.tsx
 import type { Metadata } from 'next'
 import { Inter, Space_Grotesk } from 'next/font/google'
+import { Analytics } from '@vercel/analytics/next'
 import { TRPCReactProvider } from '@/lib/trpc/client'
 import { ClarityScript } from '@/components/clarity'
 import Navbar from '@/components/navbar'
@@ -39,6 +40,7 @@ export default function RootLayout({
           <main className="pt-16">{children}</main>
           <Footer />
         </TRPCReactProvider>
+        <Analytics />
       </body>
     </html>
   )
