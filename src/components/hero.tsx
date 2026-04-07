@@ -1,5 +1,6 @@
 'use client'
 
+import Link from 'next/link'
 import Image from 'next/image'
 import { useTRPC } from '@/lib/trpc/client'
 import { useSuspenseQuery } from '@tanstack/react-query'
@@ -133,6 +134,12 @@ function HeroContent() {
                   </p>
                 </div>
               )}
+              <Link
+                href={`/partidas/${pick.slug}`}
+                className="block w-full text-center border border-outline-variant/20 text-on-surface bg-surface-container-high hover:border-primary/40 hover:text-primary rounded-md py-2 px-4 text-sm font-medium transition-colors"
+              >
+                Ver análise completa →
+              </Link>
             </div>
           </div>
         </div>
