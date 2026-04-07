@@ -19,9 +19,38 @@ const inter = Inter({
   variable: '--font-inter',
 })
 
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? 'http://localhost:3000'
+
 export const metadata: Metadata = {
-  title: 'Portal do Apostador',
-  description: 'Análise preditiva de apostas esportivas baseada em dados',
+  metadataBase: new URL(SITE_URL),
+  title: {
+    default: 'Portal do Apostador — Palpites e Análises de Apostas Esportivas',
+    template: '%s | Portal do Apostador',
+  },
+  description:
+    'Palpites, prognósticos e análises quantitativas para apostas em futebol. Modelo estatístico com probabilidades, edge e valor em mercados de gols, escanteios, cartões e mais.',
+  keywords: [
+    'palpites de apostas',
+    'prognósticos futebol',
+    'dicas de apostas',
+    'apostas esportivas',
+    'value betting',
+    'análise quantitativa futebol',
+    'palpites futebol hoje',
+    'tips apostas',
+  ],
+  openGraph: {
+    type: 'website',
+    locale: 'pt_BR',
+    siteName: 'Portal do Apostador',
+    url: SITE_URL,
+  },
+  twitter: {
+    card: 'summary_large_image',
+  },
+  alternates: {
+    canonical: SITE_URL,
+  },
 }
 
 export default function RootLayout({

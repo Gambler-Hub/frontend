@@ -3,9 +3,15 @@ import { dehydrate, HydrationBoundary } from '@tanstack/react-query'
 import { trpc, getQueryClient } from '@/lib/trpc/server'
 import CalendarView from '@/components/calendar-view'
 
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? 'http://localhost:3000'
+
 export const metadata: Metadata = {
-  title: 'Calendário de Partidas | Portal do Apostador',
-  description: 'O oráculo das apostas futuras. Analise a confiança da IA para os próximos confrontos.',
+  title: 'Palpites de Futebol Hoje e Amanhã — Calendário de Partidas',
+  description:
+    'Veja os palpites e prognósticos para os jogos de futebol de hoje e dos próximos dias. Análises com modelo estatístico para Brasileirão, Premier League, Champions League e mais.',
+  alternates: {
+    canonical: `${SITE_URL}/calendario`,
+  },
 }
 
 export default async function CalendarioPage() {

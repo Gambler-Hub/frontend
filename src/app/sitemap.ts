@@ -54,8 +54,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const dynamicRoutes: MetadataRoute.Sitemap = picks.map(({ slug, updatedAt }) => ({
     url: `${SITE_URL}/partidas/${slug}`,
     lastModified: parseISO(updatedAt),
-    changeFrequency: 'weekly',
-    priority: 0.6,
+    changeFrequency: 'daily',
+    priority: 0.9,
   }))
 
   return [...staticRoutes, ...dynamicRoutes]
