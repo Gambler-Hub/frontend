@@ -169,7 +169,7 @@ function MatchDetailContent({ slug }: { slug: string }) {
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
         {/* Right: featured cards + disclaimer — comes first in DOM so it renders above all-markets on mobile */}
         <div className="lg:col-span-4 lg:col-start-9">
-          <div className="sticky top-24 space-y-6">
+          <div className="lg:sticky lg:top-24 space-y-6">
             <h3 className="font-headline text-xl font-bold flex items-center gap-2">
               <span className="text-secondary">✦</span>
               Mercados Recomendados
