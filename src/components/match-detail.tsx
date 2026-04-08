@@ -1,6 +1,7 @@
 'use client'
 
 import Image from 'next/image'
+import { BarChart2 } from 'lucide-react'
 import { useTRPC } from '@/lib/trpc/client'
 import { useSuspenseQuery } from '@tanstack/react-query'
 import { Progress } from '@/components/ui/progress'
@@ -222,7 +223,7 @@ function MatchDetailContent({ slug }: { slug: string }) {
           {pick.team_moment && (
             <div className="space-y-4">
               <h3 className="font-headline text-xl font-bold flex items-center gap-3">
-                <span className="material-symbols-outlined text-primary text-xl">analytics</span>
+                <BarChart2 className="w-5 h-5 text-primary" />
                 Contexto &amp; Análise Profissional
               </h3>
               <div className="bg-surface-container-low rounded-xl p-6 border-t border-primary/20">
