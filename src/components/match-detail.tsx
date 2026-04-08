@@ -219,21 +219,35 @@ function MatchDetailContent({ slug }: { slug: string }) {
 
         {/* Left: narrative + markets — second in DOM but placed left on desktop via col-start-1 */}
         <div className="lg:col-span-8 lg:col-start-1 lg:row-start-1 space-y-8">
-          {/* Team moment narrative */}
-          {pick.team_moment && (
+          {/* Context & Analysis section */}
+          {(pick.team_moment || pick.game_scenario) && (
             <div className="space-y-4">
               <h3 className="font-headline text-xl font-bold flex items-center gap-3">
                 <BarChart2 className="w-5 h-5 text-primary" />
                 Contexto &amp; Análise Profissional
               </h3>
-              <div className="bg-surface-container-low rounded-xl p-6 border-t border-primary/20">
-                <h4 className="font-headline text-sm font-bold text-primary mb-3 uppercase tracking-wider">
-                  O Momento das Equipes
-                </h4>
-                <p className="text-on-surface-variant leading-relaxed font-body whitespace-pre-line">
-                  {pick.team_moment}
-                </p>
-              </div>
+
+              {pick.team_moment && (
+                <div className="bg-surface-container-low rounded-xl p-6 border-t border-primary/20">
+                  <h4 className="font-headline text-sm font-bold text-primary mb-3 uppercase tracking-wider">
+                    O Momento das Equipes
+                  </h4>
+                  <p className="text-on-surface-variant leading-relaxed font-body whitespace-pre-line">
+                    {pick.team_moment}
+                  </p>
+                </div>
+              )}
+
+              {pick.game_scenario && (
+                <div className="bg-surface-container-low rounded-xl p-6 border-t border-primary/20">
+                  <h4 className="font-headline text-sm font-bold text-primary mb-3 uppercase tracking-wider">
+                    Cenário do Jogo
+                  </h4>
+                  <p className="text-on-surface-variant leading-relaxed font-body whitespace-pre-line">
+                    {pick.game_scenario}
+                  </p>
+                </div>
+              )}
             </div>
           )}
 

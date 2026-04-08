@@ -34,6 +34,7 @@ export type MatchPick = {
   slug: string
   markets: ValueBet[]
   team_moment: string | null
+  game_scenario: string | null
 }
 
 type StrapiList<T> = {
