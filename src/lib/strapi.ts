@@ -33,6 +33,7 @@ export type MatchPick = {
   match_date: string   // ISO datetime
   slug: string
   markets: ValueBet[]
+  team_moment: string | null
 }
 
 type StrapiList<T> = {

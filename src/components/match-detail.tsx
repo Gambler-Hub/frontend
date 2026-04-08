@@ -216,8 +216,26 @@ function MatchDetailContent({ slug }: { slug: string }) {
           </div>
         </div>
 
-        {/* Left: all markets — second in DOM but placed left on desktop via col-start-1 */}
+        {/* Left: narrative + markets — second in DOM but placed left on desktop via col-start-1 */}
         <div className="lg:col-span-8 lg:col-start-1 lg:row-start-1 space-y-8">
+          {/* Team moment narrative */}
+          {pick.team_moment && (
+            <div className="space-y-4">
+              <h3 className="font-headline text-xl font-bold flex items-center gap-3">
+                <span className="material-symbols-outlined text-primary text-xl">analytics</span>
+                Contexto &amp; Análise Profissional
+              </h3>
+              <div className="bg-surface-container-low rounded-xl p-6 border-t border-primary/20">
+                <h4 className="font-headline text-sm font-bold text-primary mb-3 uppercase tracking-wider">
+                  O Momento das Equipes
+                </h4>
+                <p className="text-on-surface-variant leading-relaxed font-body whitespace-pre-line">
+                  {pick.team_moment}
+                </p>
+              </div>
+            </div>
+          )}
+
           {/* All other approved markets */}
           {allOtherMarkets.length > 0 && (
             <div className="space-y-4">
