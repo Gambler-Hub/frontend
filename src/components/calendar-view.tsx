@@ -1,43 +1,47 @@
-'use client'
+"use client";
 
-import { useState, useMemo } from 'react'
-import Image from 'next/image'
-import Link from 'next/link'
-import { useSuspenseQuery } from '@tanstack/react-query'
-import { useTRPC } from '@/lib/trpc/client'
-import { formatMarketName, formatTournament } from '@/lib/format'
-import type { ValueBet } from '@/lib/strapi'
-import { addDays as dfAddDays, parseISO } from 'date-fns'
-import { formatInTimeZone } from 'date-fns-tz'
-import { ptBR } from 'date-fns/locale'
+import { useState, useMemo } from "react";
+import Image from "next/image";
+import Link from "next/link";
+import { useSuspenseQuery } from "@tanstack/react-query";
+import { useTRPC } from "@/lib/trpc/client";
+import { formatMarketName, formatTournament } from "@/lib/format";
+import type { ValueBet } from "@/lib/strapi";
+import { addDays as dfAddDays, parseISO } from "date-fns";
+import { formatInTimeZone } from "date-fns-tz";
+import { ptBR } from "date-fns/locale";
 
 // ── Date utilities ───────────────────────────────────────────
 
-const TZ = 'America/Sao_Paulo'
+const TZ = "America/Sao_Paulo";
 
 function toLocalDateStr(iso: string): string {
-  return formatInTimeZone(new Date(iso), TZ, 'yyyy-MM-dd')
+  return formatInTimeZone(new Date(iso), TZ, "yyyy-MM-dd");
 }
 
 function todayStr(): string {
-  return formatInTimeZone(new Date(), TZ, 'yyyy-MM-dd')
+  return formatInTimeZone(new Date(), TZ, "yyyy-MM-dd");
 }
 
 function addDays(dateStr: string, n: number): string {
-  return formatInTimeZone(dfAddDays(parseISO(dateStr + 'T12:00:00'), n), TZ, 'yyyy-MM-dd')
+  return formatInTimeZone(
+    dfAddDays(parseISO(dateStr + "T12:00:00"), n),
+    TZ,
+    "yyyy-MM-dd",
+  );
 }
 
 function formatTabLabel(dateStr: string, today: string): string {
-  const tomorrow = addDays(today, 1)
-  if (dateStr === today) return 'Hoje'
-  if (dateStr === tomorrow) return 'Amanhã'
-  const d = parseISO(dateStr + 'T12:00:00')
-  const label = formatInTimeZone(d, TZ, 'EEE, dd MMM', { locale: ptBR })
-  return label.charAt(0).toUpperCase() + label.slice(1)
+  const tomorrow = addDays(today, 1);
+  if (dateStr === today) return "Hoje";
+  if (dateStr === tomorrow) return "Amanhã";
+  const d = parseISO(dateStr + "T12:00:00");
+  const label = formatInTimeZone(d, TZ, "EEE, dd MMM", { locale: ptBR });
+  return label.charAt(0).toUpperCase() + label.slice(1);
 }
 
 function matchTime(iso: string): string {
-  return formatInTimeZone(new Date(iso), TZ, 'HH:mm')
+  return formatInTimeZone(new Date(iso), TZ, "HH:mm");
 }
 
 // ── Pick utilities ───────────────────────────────────────────
@@ -45,83 +49,88 @@ function matchTime(iso: string): string {
 function bestFeaturedBet(markets: ValueBet[]): ValueBet | undefined {
   return markets
     .filter((m) => m.featured && m.approved)
-    .sort((a, b) => b.edge - a.edge)[0]
+    .sort((a, b) => b.edge - a.edge)[0];
 }
 
 function powerScore(bet: ValueBet): string {
-  return Math.min(bet.prob_model * 10, 10).toFixed(1)
+  return Math.min(bet.prob_model * 10, 10).toFixed(1);
 }
 
 function scoreBorderClass(score: number): string {
-  if (score >= 8.5) return 'border-secondary'
-  if (score >= 7.0) return 'border-primary'
-  return 'border-outline-variant/30'
+  if (score >= 8.5) return "border-secondary";
+  if (score >= 7.0) return "border-primary";
+  return "border-outline-variant/30";
 }
 
 function scoreTextClass(score: number): string {
-  if (score >= 8.5) return 'text-secondary'
-  if (score >= 7.0) return 'text-primary'
-  return 'text-on-surface'
+  if (score >= 8.5) return "text-secondary";
+  if (score >= 7.0) return "text-primary";
+  return "text-on-surface";
 }
 
 // ── Constants ────────────────────────────────────────────────
 
 const TOURNAMENT_COUNTRY: Record<string, string> = {
-  BRASILEIRAO_SERIE_A: 'BRASIL',
-  BRASILEIRAO_SERIE_B: 'BRASIL',
-  PREMIER_LEAGUE: 'INGLATERRA',
-  LA_LIGA: 'ESPANHA',
-  BUNDESLIGA: 'ALEMANHA',
-  LIGUE_1: 'FRANÇA',
-  SERIE_A: 'ITÁLIA',
-  CHAMPIONS_LEAGUE: 'EUROPA',
-  LIBERTADORES:     'AMERICA DO SUL',
-  SULAMERICANA:     'AMERICA DO SUL',
-}
+  BRASILEIRAO_SERIE_A: "BRASIL",
+  BRASILEIRAO_SERIE_B: "BRASIL",
+  PREMIER_LEAGUE: "INGLATERRA",
+  LA_LIGA: "ESPANHA",
+  BUNDESLIGA: "ALEMANHA",
+  LIGUE_1: "FRANÇA",
+  SERIE_A: "ITÁLIA",
+  CHAMPIONS_LEAGUE: "EUROPA",
+  LIBERTADORES: "AMERICA DO SUL",
+  SULAMERICANA: "AMERICA DO SUL",
+};
 
 // ── Component ────────────────────────────────────────────────
 
 export default function CalendarView() {
-  const trpc = useTRPC()
-  const { data: picks } = useSuspenseQuery(trpc.matchPicks.getUpcoming.queryOptions())
+  const trpc = useTRPC();
+  const { data: picks } = useSuspenseQuery(
+    trpc.matchPicks.getUpcoming.queryOptions(),
+  );
 
-  const today = todayStr()
-  const dateTabs = useMemo(() => [0, 1, 2, 3, 4].map((n) => addDays(today, n)), [today])
+  const today = todayStr();
+  const dateTabs = useMemo(
+    () => [0, 1, 2, 3, 4].map((n) => addDays(today, n)),
+    [today],
+  );
 
-  const [selectedDate, setSelectedDate] = useState(today)
-  const [searchQuery, setSearchQuery] = useState('')
-  const [selectedLeague, setSelectedLeague] = useState<string | null>(null)
+  const [selectedDate, setSelectedDate] = useState(today);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [selectedLeague, setSelectedLeague] = useState<string | null>(null);
 
   const availableLeagues = useMemo(
     () => Array.from(new Set(picks.map((p) => p.tournament))),
     [picks],
-  )
+  );
 
   const filtered = useMemo(() => {
     return picks.filter((pick) => {
-      if (toLocalDateStr(pick.match_date) !== selectedDate) return false
-      if (selectedLeague && pick.tournament !== selectedLeague) return false
+      if (toLocalDateStr(pick.match_date) !== selectedDate) return false;
+      if (selectedLeague && pick.tournament !== selectedLeague) return false;
       if (searchQuery) {
-        const q = searchQuery.toLowerCase()
+        const q = searchQuery.toLowerCase();
         if (
           !pick.home_team.toLowerCase().includes(q) &&
           !pick.away_team.toLowerCase().includes(q)
         )
-          return false
+          return false;
       }
-      return true
-    })
-  }, [picks, selectedDate, selectedLeague, searchQuery])
+      return true;
+    });
+  }, [picks, selectedDate, selectedLeague, searchQuery]);
 
   const grouped = useMemo(() => {
-    const map = new Map<string, typeof filtered>()
+    const map = new Map<string, typeof filtered>();
     for (const pick of filtered) {
-      const list = map.get(pick.tournament) ?? []
-      list.push(pick)
-      map.set(pick.tournament, list)
+      const list = map.get(pick.tournament) ?? [];
+      list.push(pick);
+      map.set(pick.tournament, list);
     }
-    return map
-  }, [filtered])
+    return map;
+  }, [filtered]);
 
   return (
     <div className="flex flex-col lg:flex-row gap-8">
@@ -152,8 +161,8 @@ export default function CalendarView() {
                 onClick={() => setSelectedLeague(null)}
                 className={`flex items-center justify-between px-3 py-2 rounded-md text-sm font-medium transition-all ${
                   selectedLeague === null
-                    ? 'bg-surface-container-high text-on-surface'
-                    : 'text-on-surface-variant hover:bg-surface-container-low hover:text-on-surface'
+                    ? "bg-surface-container-high text-on-surface"
+                    : "text-on-surface-variant hover:bg-surface-container-low hover:text-on-surface"
                 }`}
               >
                 <span>Todas as Ligas</span>
@@ -161,22 +170,24 @@ export default function CalendarView() {
               {availableLeagues.map((league) => (
                 <button
                   key={league}
-                  onClick={() => setSelectedLeague(league === selectedLeague ? null : league)}
+                  onClick={() =>
+                    setSelectedLeague(league === selectedLeague ? null : league)
+                  }
                   className={`flex items-center justify-between px-3 py-2 rounded-md text-sm font-medium transition-all ${
                     selectedLeague === league
-                      ? 'bg-surface-container-high text-on-surface'
-                      : 'text-on-surface-variant hover:bg-surface-container-low hover:text-on-surface'
+                      ? "bg-surface-container-high text-on-surface"
+                      : "text-on-surface-variant hover:bg-surface-container-low hover:text-on-surface"
                   }`}
                 >
                   <span>{formatTournament(league)}</span>
                   <span
                     className={`text-[10px] px-1.5 rounded ${
                       selectedLeague === league
-                        ? 'text-primary bg-primary/10'
-                        : 'text-on-surface-variant/50 bg-outline-variant/10'
+                        ? "text-primary bg-primary/10"
+                        : "text-on-surface-variant/50 bg-outline-variant/10"
                     }`}
                   >
-                    {(TOURNAMENT_COUNTRY[league] ?? 'INT').slice(0, 3)}
+                    {(TOURNAMENT_COUNTRY[league] ?? "INT").slice(0, 3)}
                   </span>
                 </button>
               ))}
@@ -211,8 +222,8 @@ export default function CalendarView() {
                 onClick={() => setSelectedDate(date)}
                 className={`px-4 py-2 rounded-md text-sm font-medium transition-all whitespace-nowrap ${
                   selectedDate === date
-                    ? 'bg-primary-container text-on-primary-container'
-                    : 'text-on-surface-variant hover:text-on-surface'
+                    ? "bg-primary-container text-on-primary-container"
+                    : "text-on-surface-variant hover:text-on-surface"
                 }`}
               >
                 {formatTabLabel(date, today)}
@@ -233,21 +244,21 @@ export default function CalendarView() {
               <div className="flex items-center gap-3">
                 <div className="w-8 h-8 rounded bg-surface-container flex items-center justify-center border border-outline-variant/20">
                   <span className="text-[9px] font-bold text-primary font-headline leading-none text-center">
-                    {(TOURNAMENT_COUNTRY[tournament] ?? 'IT').slice(0, 2)}
+                    {(TOURNAMENT_COUNTRY[tournament] ?? "IT").slice(0, 2)}
                   </span>
                 </div>
                 <h2 className="font-headline text-lg font-bold text-on-surface tracking-tight">
                   {formatTournament(tournament).toUpperCase()}
                   <span className="text-on-surface-variant text-sm font-normal ml-2">
-                    — {TOURNAMENT_COUNTRY[tournament] ?? 'INTERNACIONAL'}
+                    — {TOURNAMENT_COUNTRY[tournament] ?? "INTERNACIONAL"}
                   </span>
                 </h2>
               </div>
 
               {/* Match rows */}
               {tournamentPicks.map((pick) => {
-                const bet = bestFeaturedBet(pick.markets)
-                const score = bet ? parseFloat(powerScore(bet)) : 0
+                const bet = bestFeaturedBet(pick.markets);
+                const score = bet ? parseFloat(powerScore(bet)) : 0;
 
                 return (
                   <Link
@@ -272,7 +283,13 @@ export default function CalendarView() {
                           {pick.home_team}
                         </span>
                         {pick.home_team_logo ? (
-                          <Image src={pick.home_team_logo} alt={pick.home_team} width={40} height={40} className="object-contain shrink-0" />
+                          <Image
+                            src={pick.home_team_logo}
+                            alt={pick.home_team}
+                            width={40}
+                            height={40}
+                            className="object-contain shrink-0"
+                          />
                         ) : (
                           <div className="w-10 h-10 bg-surface-container rounded-full flex items-center justify-center border border-outline-variant/10 shrink-0">
                             <span className="text-xs font-bold text-on-surface-variant uppercase">
@@ -286,7 +303,13 @@ export default function CalendarView() {
                       </div>
                       <div className="flex flex-1 items-center justify-start gap-2 min-w-0">
                         {pick.away_team_logo ? (
-                          <Image src={pick.away_team_logo} alt={pick.away_team} width={40} height={40} className="object-contain shrink-0" />
+                          <Image
+                            src={pick.away_team_logo}
+                            alt={pick.away_team}
+                            width={40}
+                            height={40}
+                            className="object-contain shrink-0"
+                          />
                         ) : (
                           <div className="w-10 h-10 bg-surface-container rounded-full flex items-center justify-center border border-outline-variant/10 shrink-0">
                             <span className="text-xs font-bold text-on-surface-variant uppercase">
@@ -316,10 +339,14 @@ export default function CalendarView() {
                           </span>
                         </div>
                         <div className="flex items-center justify-between">
-                          <span className="text-[10px] text-on-surface-variant">TREND</span>
+                          <span className="text-[10px] text-on-surface-variant">
+                            TREND
+                          </span>
                           <span className="text-[10px] font-bold text-on-surface truncate max-w-[110px]">
-                            {bet.side.toUpperCase()} {bet.line} —{' '}
-                            {formatMarketName(bet.market_name, bet.team_label).slice(0, 10).toUpperCase()}
+                            {bet.side.toUpperCase()} {bet.line} —{" "}
+                            {formatMarketName(bet.market_name, bet.team_label)
+                              .slice(0, 10)
+                              .toUpperCase()}
                           </span>
                         </div>
                       </div>
@@ -331,12 +358,12 @@ export default function CalendarView() {
                       </div>
                     )}
                   </Link>
-                )
+                );
               })}
             </section>
           ))
         )}
       </div>
     </div>
-  )
+  );
 }
