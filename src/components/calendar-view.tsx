@@ -75,6 +75,8 @@ const TOURNAMENT_COUNTRY: Record<string, string> = {
   LIGUE_1: 'FRANÇA',
   SERIE_A: 'ITÁLIA',
   CHAMPIONS_LEAGUE: 'EUROPA',
+  LIBERTADORES:     'AMERICA DO SUL',
+  SULAMERICANA:     'AMERICA DO SUL',
 }
 
 // ── Component ────────────────────────────────────────────────

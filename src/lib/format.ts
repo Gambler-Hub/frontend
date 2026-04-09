@@ -29,6 +29,9 @@ const TOURNAMENT_LABELS: Record<string, string> = {
   BUNDESLIGA:          'Bundesliga',
   SERIE_A:             'Serie A',
   CHAMPIONS_LEAGUE:    'Champions League',
+  LIGUE_1:             'Ligue 1',
+  LIBERTADORES:        'Copa Libertadores',
+  SULAMERICANA:        'Copa Sul-Americana',
 }
 
 /**
