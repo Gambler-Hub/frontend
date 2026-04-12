@@ -15,8 +15,18 @@ function topFeaturedBet(pick: MatchPick): ValueBet | undefined {
 }
 
 function featuredPick(picks: MatchPick[]): MatchPick | undefined {
-  return [...picks]
-    .filter((p) => p.markets.some((m) => m.featured && m.approved))
+  const eligible = picks.filter((p) => p.markets.some((m) => m.featured && m.approved))
+  if (eligible.length === 0) return undefined
+
+  // Find the earliest day that has at least one eligible pick
+  const earliest = eligible.reduce((min, p) => {
+    const day = p.match_date.slice(0, 10)
+    return day < min ? day : min
+  }, eligible[0].match_date.slice(0, 10))
+
+  // Among picks on that earliest day, pick the one with highest edge
+  return eligible
+    .filter((p) => p.match_date.slice(0, 10) === earliest)
     .sort((a, b) => {
       const edgeA = topFeaturedBet(a)?.edge ?? 0
       const edgeB = topFeaturedBet(b)?.edge ?? 0
