@@ -12,10 +12,10 @@ const pillars = [
       'Modelos matemáticos auditáveis com lógica probabilística pura e sem caixas-pretas.',
   },
   {
-    icon: '🔒',
-    title: 'Transações Seguras',
+    icon: '📈',
+    title: 'Foco em Value Betting',
     description:
-      'Seus dados e acesso protegidos com protocolos de segurança rigorosos.',
+      'Identificamos odds com edge positivo — a única abordagem matematicamente lucrativa no longo prazo.',
   },
 ]
 
