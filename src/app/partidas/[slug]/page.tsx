@@ -46,7 +46,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       `${pick.home_team} x ${pick.away_team} ${tournament}`,
       `palpite ${tournament}`,
       'apostas futebol',
-      'value betting',
+      'apostas de valor',
     ],
     openGraph: {
       title,

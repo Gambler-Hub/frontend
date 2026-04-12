@@ -13,7 +13,7 @@ const pillars = [
   },
   {
     icon: '📈',
-    title: 'Foco em Value Betting',
+    title: 'Foco em Apostas de valor',
     description:
       'Identificamos odds com edge positivo — a única abordagem matematicamente lucrativa no longo prazo.',
   },
