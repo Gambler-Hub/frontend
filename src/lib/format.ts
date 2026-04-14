@@ -34,6 +34,23 @@ const TOURNAMENT_LABELS: Record<string, string> = {
   SULAMERICANA:        'Copa Sul-Americana',
 }
 
+const TOURNAMENT_FLAGS: Record<string, string> = {
+  BRASILEIRAO_SERIE_A:  '🇧🇷',
+  BRASILEIRAO_SERIE_B:  '🇧🇷',
+  PREMIER_LEAGUE:       '🏴󠁧󠁢󠁥󠁮󠁧󠁿',
+  LA_LIGA:              '🇪🇸',
+  BUNDESLIGA:           '🇩🇪',
+  LIGUE_1:              '🇫🇷',
+  SERIE_A:              '🇮🇹',
+  CHAMPIONS_LEAGUE:     '🇪🇺',
+  LIBERTADORES:         '🌎',
+  SULAMERICANA:         '🌎',
+  CHAMPIONSHIP:         '🏴󠁧󠁢󠁥󠁮󠁧󠁿',
+  EREDIVISIE:           '🇳🇱',
+  PRIMEIRA_LIGA:        '🇵🇹',
+  SUPER_LIG:            '🇹🇷',
+}
+
 /**
  * Formats a market name into a human-readable Portuguese label.
  * Pass `teamLabel` (the actual team name) for TEAM_* markets.
@@ -52,4 +69,9 @@ export function formatBetLine(side: 'over' | 'under', line: number): string {
 /** Formats tournament ID to display name */
 export function formatTournament(id: string): string {
   return TOURNAMENT_LABELS[id] ?? id.replace(/_/g, ' ')
+}
+
+/** Returns the flag emoji for a tournament, or 🌐 if unknown */
+export function getTournamentFlag(id: string): string {
+  return TOURNAMENT_FLAGS[id] ?? '🌐'
 }
