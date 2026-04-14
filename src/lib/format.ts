@@ -32,6 +32,10 @@ const TOURNAMENT_LABELS: Record<string, string> = {
   LIGUE_1:             'Ligue 1',
   LIBERTADORES:        'Copa Libertadores',
   SULAMERICANA:        'Copa Sul-Americana',
+  CHAMPIONSHIP:        'Championship',
+  EREDIVISIE:          'Eredivisie',
+  PRIMEIRA_LIGA:       'Primeira Liga',
+  SUPER_LIG:           'Süper Lig',
 }
 
 const TOURNAMENT_FLAGS: Record<string, string> = {

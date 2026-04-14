@@ -97,7 +97,7 @@ export default function CalendarView() {
     trpc.matchPicks.getAll.queryOptions(),
   );
 
-  const today = todayStr();
+  const today = useMemo(() => todayStr(), []);
 
   const { register, watch } = useForm<SearchForm>({ defaultValues: { search: "" } });
   const searchQuery = watch("search");
@@ -180,10 +180,11 @@ export default function CalendarView() {
       <aside className="w-full lg:w-64 flex-shrink-0 space-y-8">
         {/* Search */}
         <div className="space-y-3">
-          <label className="font-headline text-xs font-bold text-primary tracking-widest uppercase block">
+          <label htmlFor="calendar-search" className="font-headline text-xs font-bold text-primary tracking-widest uppercase block">
             Busca Técnica
           </label>
           <input
+            id="calendar-search"
             {...register("search")}
             type="text"
             placeholder="Equipe ou time..."
@@ -272,22 +273,20 @@ export default function CalendarView() {
 
           {/* Date picker */}
           <div className="flex items-center gap-1">
-            <Popover open={pickerOpen} onOpenChange={setPickerOpen}>
-              <PopoverTrigger>
-                <button
-                  className={`flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium border transition-all ${
-                    selectedDate && !quickDates.includes(selectedDate)
-                      ? "border-primary/40 bg-primary-container text-on-primary-container"
-                      : "border-outline-variant/10 bg-surface-container-low text-on-surface-variant hover:text-on-surface"
-                  }`}
-                >
-                  <CalendarIcon className="w-4 h-4" />
-                  {selectedDate && !quickDates.includes(selectedDate)
-                    ? formatQuickLabel(selectedDate, today)
-                    : "Outra data"}
-                </button>
+            <Popover open={pickerOpen} onOpenChange={(open) => setPickerOpen(open)}>
+              <PopoverTrigger
+                className={`flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium border transition-all ${
+                  selectedDate && !quickDates.includes(selectedDate)
+                    ? "border-primary/40 bg-primary-container text-on-primary-container"
+                    : "border-outline-variant/10 bg-surface-container-low text-on-surface-variant hover:text-on-surface"
+                }`}
+              >
+                <CalendarIcon className="w-4 h-4" />
+                {selectedDate && !quickDates.includes(selectedDate)
+                  ? formatQuickLabel(selectedDate, today)
+                  : "Outra data"}
               </PopoverTrigger>
-              <PopoverContent align="start">
+              <PopoverContent align="start" className="w-auto p-0">
                 <Calendar
                   mode="single"
                   selected={pickerValue}
