@@ -3,13 +3,21 @@
 import { useState, useMemo } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { useForm } from "react-hook-form";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { useTRPC } from "@/lib/trpc/client";
-import { formatMarketName, formatTournament } from "@/lib/format";
+import { formatMarketName, formatTournament, getTournamentFlag } from "@/lib/format";
 import type { ValueBet } from "@/lib/strapi";
 import { addDays as dfAddDays, parseISO } from "date-fns";
 import { formatInTimeZone } from "date-fns-tz";
 import { ptBR } from "date-fns/locale";
+import { Calendar } from "@/components/ui/calendar";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { CalendarIcon, X } from "lucide-react";
 
 // ── Date utilities ───────────────────────────────────────────
 
@@ -31,12 +39,21 @@ function addDays(dateStr: string, n: number): string {
   );
 }
 
-function formatTabLabel(dateStr: string, today: string): string {
+function formatQuickLabel(dateStr: string, today: string): string {
   const tomorrow = addDays(today, 1);
   if (dateStr === today) return "Hoje";
   if (dateStr === tomorrow) return "Amanhã";
   const d = parseISO(dateStr + "T12:00:00");
   const label = formatInTimeZone(d, TZ, "EEE, dd MMM", { locale: ptBR });
+  return label.charAt(0).toUpperCase() + label.slice(1);
+}
+
+function formatDateHeader(dateStr: string, today: string): string {
+  const tomorrow = addDays(today, 1);
+  if (dateStr === today) return "Hoje";
+  if (dateStr === tomorrow) return "Amanhã";
+  const d = parseISO(dateStr + "T12:00:00");
+  const label = formatInTimeZone(d, TZ, "EEEE, dd 'de' MMMM", { locale: ptBR });
   return label.charAt(0).toUpperCase() + label.slice(1);
 }
 
@@ -68,20 +85,9 @@ function scoreTextClass(score: number): string {
   return "text-on-surface";
 }
 
-// ── Constants ────────────────────────────────────────────────
+// ── Types ────────────────────────────────────────────────────
 
-const TOURNAMENT_COUNTRY: Record<string, string> = {
-  BRASILEIRAO_SERIE_A: "BRASIL",
-  BRASILEIRAO_SERIE_B: "BRASIL",
-  PREMIER_LEAGUE: "INGLATERRA",
-  LA_LIGA: "ESPANHA",
-  BUNDESLIGA: "ALEMANHA",
-  LIGUE_1: "FRANÇA",
-  SERIE_A: "ITÁLIA",
-  CHAMPIONS_LEAGUE: "EUROPA",
-  LIBERTADORES: "AMERICA DO SUL",
-  SULAMERICANA: "AMERICA DO SUL",
-};
+type SearchForm = { search: string };
 
 // ── Component ────────────────────────────────────────────────
 
@@ -92,14 +98,25 @@ export default function CalendarView() {
   );
 
   const today = todayStr();
-  const dateTabs = useMemo(
-    () => [0, 1, 2, 3, 4].map((n) => addDays(today, n)),
-    [today],
-  );
 
-  const [selectedDate, setSelectedDate] = useState(today);
-  const [searchQuery, setSearchQuery] = useState("");
+  const { register, watch } = useForm<SearchForm>({ defaultValues: { search: "" } });
+  const searchQuery = watch("search");
+
+  // null = all dates; string = specific date filter
+  const [selectedDate, setSelectedDate] = useState<string | null>(null);
   const [selectedLeague, setSelectedLeague] = useState<string | null>(null);
+  const [pickerOpen, setPickerOpen] = useState(false);
+
+  // Dates that have at least one match, sorted ascending, starting from today
+  const datesWithMatches = useMemo(() => {
+    const dateSet = new Set(picks.map((p) => toLocalDateStr(p.match_date)));
+    return Array.from(dateSet)
+      .filter((d) => d >= today)
+      .sort();
+  }, [picks, today]);
+
+  // Up to 4 quick-filter buttons
+  const quickDates = useMemo(() => datesWithMatches.slice(0, 4), [datesWithMatches]);
 
   const availableLeagues = useMemo(
     () => Array.from(new Set(picks.map((p) => p.tournament))),
@@ -108,7 +125,8 @@ export default function CalendarView() {
 
   const filtered = useMemo(() => {
     return picks.filter((pick) => {
-      if (toLocalDateStr(pick.match_date) !== selectedDate) return false;
+      if (selectedDate && toLocalDateStr(pick.match_date) !== selectedDate)
+        return false;
       if (selectedLeague && pick.tournament !== selectedLeague) return false;
       if (searchQuery) {
         const q = searchQuery.toLowerCase();
@@ -122,15 +140,39 @@ export default function CalendarView() {
     });
   }, [picks, selectedDate, selectedLeague, searchQuery]);
 
+  // Group by date, then by tournament
   const grouped = useMemo(() => {
-    const map = new Map<string, typeof filtered>();
+    const result = new Map<string, Map<string, typeof picks>>();
     for (const pick of filtered) {
-      const list = map.get(pick.tournament) ?? [];
+      const dateStr = toLocalDateStr(pick.match_date);
+      if (!result.has(dateStr)) result.set(dateStr, new Map());
+      const byLeague = result.get(dateStr)!;
+      const list = byLeague.get(pick.tournament) ?? [];
       list.push(pick);
-      map.set(pick.tournament, list);
+      byLeague.set(pick.tournament, list);
     }
-    return map;
+    return result;
   }, [filtered]);
+
+  function handleQuickDate(date: string) {
+    setSelectedDate((prev) => (prev === date ? null : date));
+  }
+
+  function handlePickerDate(date: Date | undefined) {
+    if (!date) return;
+    const dateStr = formatInTimeZone(date, TZ, "yyyy-MM-dd");
+    setSelectedDate(dateStr);
+    setPickerOpen(false);
+  }
+
+  function clearDateFilter() {
+    setSelectedDate(null);
+  }
+
+  // Convert selectedDate string to Date object for the Calendar component
+  const pickerValue = selectedDate
+    ? parseISO(selectedDate + "T12:00:00")
+    : undefined;
 
   return (
     <div className="flex flex-col lg:flex-row gap-8">
@@ -142,10 +184,9 @@ export default function CalendarView() {
             Busca Técnica
           </label>
           <input
+            {...register("search")}
             type="text"
-            placeholder="Equipe ou Liga..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
+            placeholder="Equipe ou time..."
             className="w-full bg-surface-container-low border border-outline-variant/10 rounded-lg py-3 px-4 text-sm focus:outline-none focus:ring-1 focus:ring-primary/40 text-on-surface placeholder:text-on-surface-variant"
           />
         </div>
@@ -181,13 +222,11 @@ export default function CalendarView() {
                 >
                   <span>{formatTournament(league)}</span>
                   <span
-                    className={`text-[10px] px-1.5 rounded ${
-                      selectedLeague === league
-                        ? "text-primary bg-primary/10"
-                        : "text-on-surface-variant/50 bg-outline-variant/10"
+                    className={`text-base px-1 rounded ${
+                      selectedLeague === league ? "opacity-100" : "opacity-60"
                     }`}
                   >
-                    {(TOURNAMENT_COUNTRY[league] ?? "INT").slice(0, 3)}
+                    {getTournamentFlag(league)}
                   </span>
                 </button>
               ))}
@@ -213,154 +252,201 @@ export default function CalendarView() {
 
       {/* ── Main content ─────────────────────────── */}
       <div className="flex-1 space-y-8">
-        {/* Date tabs */}
+        {/* Date filter bar */}
         <div className="flex flex-wrap items-center gap-3 pb-4 border-b border-outline-variant/10">
           <div className="flex items-center gap-1 p-1 bg-surface-container-low rounded-lg flex-wrap">
-            {dateTabs.map((date) => (
+            {quickDates.map((date) => (
               <button
                 key={date}
-                onClick={() => setSelectedDate(date)}
+                onClick={() => handleQuickDate(date)}
                 className={`px-4 py-2 rounded-md text-sm font-medium transition-all whitespace-nowrap ${
                   selectedDate === date
                     ? "bg-primary-container text-on-primary-container"
                     : "text-on-surface-variant hover:text-on-surface"
                 }`}
               >
-                {formatTabLabel(date, today)}
+                {formatQuickLabel(date, today)}
               </button>
             ))}
+          </div>
+
+          {/* Date picker */}
+          <div className="flex items-center gap-1">
+            <Popover open={pickerOpen} onOpenChange={setPickerOpen}>
+              <PopoverTrigger>
+                <button
+                  className={`flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium border transition-all ${
+                    selectedDate && !quickDates.includes(selectedDate)
+                      ? "border-primary/40 bg-primary-container text-on-primary-container"
+                      : "border-outline-variant/10 bg-surface-container-low text-on-surface-variant hover:text-on-surface"
+                  }`}
+                >
+                  <CalendarIcon className="w-4 h-4" />
+                  {selectedDate && !quickDates.includes(selectedDate)
+                    ? formatQuickLabel(selectedDate, today)
+                    : "Outra data"}
+                </button>
+              </PopoverTrigger>
+              <PopoverContent align="start">
+                <Calendar
+                  mode="single"
+                  selected={pickerValue}
+                  onSelect={handlePickerDate}
+                  initialFocus
+                />
+              </PopoverContent>
+            </Popover>
+
+            {selectedDate && (
+              <button
+                onClick={clearDateFilter}
+                className="p-2 rounded-lg text-on-surface-variant hover:text-on-surface hover:bg-surface-container-low transition-all"
+                aria-label="Limpar filtro de data"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            )}
           </div>
         </div>
 
         {/* Grouped matches */}
         {grouped.size === 0 ? (
           <p className="text-on-surface-variant text-center py-20">
-            Nenhuma partida disponível para este dia.
+            Nenhuma partida disponível.
           </p>
         ) : (
-          Array.from(grouped.entries()).map(([tournament, tournamentPicks]) => (
-            <section key={tournament} className="space-y-4">
-              {/* League header */}
+          Array.from(grouped.entries()).map(([dateStr, byLeague]) => (
+            <div key={dateStr} className="space-y-8">
+              {/* Date header */}
               <div className="flex items-center gap-3">
-                <div className="w-8 h-8 rounded bg-surface-container flex items-center justify-center border border-outline-variant/20">
-                  <span className="text-[9px] font-bold text-primary font-headline leading-none text-center">
-                    {(TOURNAMENT_COUNTRY[tournament] ?? "IT").slice(0, 2)}
-                  </span>
-                </div>
-                <h2 className="font-headline text-lg font-bold text-on-surface tracking-tight">
-                  {formatTournament(tournament).toUpperCase()}
-                  <span className="text-on-surface-variant text-sm font-normal ml-2">
-                    — {TOURNAMENT_COUNTRY[tournament] ?? "INTERNACIONAL"}
-                  </span>
-                </h2>
+                <span className="font-headline text-xs font-bold text-primary tracking-widest uppercase">
+                  {formatDateHeader(dateStr, today)}
+                </span>
+                <div className="flex-1 h-px bg-outline-variant/10" />
               </div>
 
-              {/* Match rows */}
-              {tournamentPicks.map((pick) => {
-                const bet = bestFeaturedBet(pick.markets);
-                const score = bet ? parseFloat(powerScore(bet)) : 0;
-
-                return (
-                  <Link
-                    key={pick.id}
-                    href={`/partidas/${pick.slug}`}
-                    className="glass-card p-6 rounded-xl flex flex-col md:flex-row items-center gap-6 hover:shadow-[0_0_30px_rgba(83,221,252,0.05)] hover:border-primary/20 border border-transparent transition-all"
-                  >
-                    {/* Time */}
-                    <div className="flex flex-col items-center md:items-start min-w-[80px]">
-                      <span className="font-headline text-2xl font-bold text-primary">
-                        {matchTime(pick.match_date)}
-                      </span>
-                      <span className="text-[10px] text-on-surface-variant font-bold uppercase tracking-widest">
-                        {formatTabLabel(toLocalDateStr(pick.match_date), today)}
+              {Array.from(byLeague.entries()).map(([tournament, tournamentPicks]) => (
+                <section key={tournament} className="space-y-4">
+                  {/* League header */}
+                  <div className="flex items-center gap-3">
+                    <div className="w-8 h-8 rounded bg-surface-container flex items-center justify-center border border-outline-variant/20">
+                      <span className="text-base leading-none">
+                        {getTournamentFlag(tournament)}
                       </span>
                     </div>
+                    <h2 className="font-headline text-lg font-bold text-on-surface tracking-tight">
+                      {formatTournament(tournament)}
+                    </h2>
+                  </div>
 
-                    {/* Teams */}
-                    <div className="flex flex-1 items-center justify-between w-full gap-2 min-w-0">
-                      <div className="flex flex-1 items-center justify-end gap-2 text-right min-w-0">
-                        <span className="font-headline text-base md:text-lg font-bold truncate min-w-0">
-                          {pick.home_team}
-                        </span>
-                        {pick.home_team_logo ? (
-                          <Image
-                            src={pick.home_team_logo}
-                            alt={pick.home_team}
-                            width={40}
-                            height={40}
-                            className="object-contain shrink-0"
-                          />
-                        ) : (
-                          <div className="w-10 h-10 bg-surface-container rounded-full flex items-center justify-center border border-outline-variant/10 shrink-0">
-                            <span className="text-xs font-bold text-on-surface-variant uppercase">
-                              {pick.home_team.slice(0, 3)}
-                            </span>
-                          </div>
-                        )}
-                      </div>
-                      <div className="px-2 text-on-surface-variant font-headline font-bold italic opacity-20 text-lg shrink-0">
-                        VS
-                      </div>
-                      <div className="flex flex-1 items-center justify-start gap-2 min-w-0">
-                        {pick.away_team_logo ? (
-                          <Image
-                            src={pick.away_team_logo}
-                            alt={pick.away_team}
-                            width={40}
-                            height={40}
-                            className="object-contain shrink-0"
-                          />
-                        ) : (
-                          <div className="w-10 h-10 bg-surface-container rounded-full flex items-center justify-center border border-outline-variant/10 shrink-0">
-                            <span className="text-xs font-bold text-on-surface-variant uppercase">
-                              {pick.away_team.slice(0, 3)}
-                            </span>
-                          </div>
-                        )}
-                        <span className="font-headline text-base md:text-lg font-bold truncate min-w-0">
-                          {pick.away_team}
-                        </span>
-                      </div>
-                    </div>
+                  {/* Match rows */}
+                  {tournamentPicks.map((pick) => {
+                    const bet = bestFeaturedBet(pick.markets);
+                    const score = bet ? parseFloat(powerScore(bet)) : 0;
 
-                    {/* AI Power Index */}
-                    {bet ? (
-                      <div
-                        className={`w-full md:w-56 bg-surface-container-highest/40 rounded-lg p-3 space-y-2 border-l-2 ${scoreBorderClass(score)}`}
+                    return (
+                      <Link
+                        key={pick.id}
+                        href={`/partidas/${pick.slug}`}
+                        className="glass-card p-6 rounded-xl flex flex-col md:flex-row items-center gap-6 hover:shadow-[0_0_30px_rgba(83,221,252,0.05)] hover:border-primary/20 border border-transparent transition-all"
                       >
-                        <div className="flex items-center justify-between">
-                          <span className="text-[10px] font-bold text-primary tracking-tighter">
-                            IA ÍNDICE DE FORÇA
+                        {/* Time */}
+                        <div className="flex flex-col items-center md:items-start min-w-[80px]">
+                          <span className="font-headline text-2xl font-bold text-primary">
+                            {matchTime(pick.match_date)}
                           </span>
-                          <span
-                            className={`font-headline text-sm font-bold ${scoreTextClass(score)}`}
+                          <span className="text-[10px] text-on-surface-variant font-bold uppercase tracking-widest">
+                            {formatQuickLabel(toLocalDateStr(pick.match_date), today)}
+                          </span>
+                        </div>
+
+                        {/* Teams */}
+                        <div className="flex flex-1 items-center justify-between w-full gap-2 min-w-0">
+                          <div className="flex flex-1 items-center justify-end gap-2 text-right min-w-0">
+                            <span className="font-headline text-base md:text-lg font-bold truncate min-w-0">
+                              {pick.home_team}
+                            </span>
+                            {pick.home_team_logo ? (
+                              <Image
+                                src={pick.home_team_logo}
+                                alt={pick.home_team}
+                                width={40}
+                                height={40}
+                                className="object-contain shrink-0"
+                              />
+                            ) : (
+                              <div className="w-10 h-10 bg-surface-container rounded-full flex items-center justify-center border border-outline-variant/10 shrink-0">
+                                <span className="text-xs font-bold text-on-surface-variant uppercase">
+                                  {pick.home_team.slice(0, 3)}
+                                </span>
+                              </div>
+                            )}
+                          </div>
+                          <div className="px-2 text-on-surface-variant font-headline font-bold italic opacity-20 text-lg shrink-0">
+                            VS
+                          </div>
+                          <div className="flex flex-1 items-center justify-start gap-2 min-w-0">
+                            {pick.away_team_logo ? (
+                              <Image
+                                src={pick.away_team_logo}
+                                alt={pick.away_team}
+                                width={40}
+                                height={40}
+                                className="object-contain shrink-0"
+                              />
+                            ) : (
+                              <div className="w-10 h-10 bg-surface-container rounded-full flex items-center justify-center border border-outline-variant/10 shrink-0">
+                                <span className="text-xs font-bold text-on-surface-variant uppercase">
+                                  {pick.away_team.slice(0, 3)}
+                                </span>
+                              </div>
+                            )}
+                            <span className="font-headline text-base md:text-lg font-bold truncate min-w-0">
+                              {pick.away_team}
+                            </span>
+                          </div>
+                        </div>
+
+                        {/* AI Power Index */}
+                        {bet ? (
+                          <div
+                            className={`w-full md:w-56 bg-surface-container-highest/40 rounded-lg p-3 space-y-2 border-l-2 ${scoreBorderClass(score)}`}
                           >
-                            {powerScore(bet)}
-                          </span>
-                        </div>
-                        <div className="flex items-center justify-between">
-                          <span className="text-[10px] text-on-surface-variant">
-                            TREND
-                          </span>
-                          <span className="text-[10px] font-bold text-on-surface truncate max-w-[110px]">
-                            {bet.side.toUpperCase()} {bet.line} —{" "}
-                            {formatMarketName(bet.market_name, bet.team_label)
-                              .slice(0, 10)
-                              .toUpperCase()}
-                          </span>
-                        </div>
-                      </div>
-                    ) : (
-                      <div className="w-full md:w-56 bg-surface-container-highest/40 rounded-lg p-3 border-l-2 border-outline-variant/20">
-                        <p className="text-[10px] text-on-surface-variant text-center py-2">
-                          Sem análise disponível
-                        </p>
-                      </div>
-                    )}
-                  </Link>
-                );
-              })}
-            </section>
+                            <div className="flex items-center justify-between">
+                              <span className="text-[10px] font-bold text-primary tracking-tighter">
+                                IA ÍNDICE DE FORÇA
+                              </span>
+                              <span
+                                className={`font-headline text-sm font-bold ${scoreTextClass(score)}`}
+                              >
+                                {powerScore(bet)}
+                              </span>
+                            </div>
+                            <div className="flex items-center justify-between">
+                              <span className="text-[10px] text-on-surface-variant">
+                                TREND
+                              </span>
+                              <span className="text-[10px] font-bold text-on-surface truncate max-w-[110px]">
+                                {bet.side.toUpperCase()} {bet.line} —{" "}
+                                {formatMarketName(bet.market_name, bet.team_label)
+                                  .slice(0, 10)
+                                  .toUpperCase()}
+                              </span>
+                            </div>
+                          </div>
+                        ) : (
+                          <div className="w-full md:w-56 bg-surface-container-highest/40 rounded-lg p-3 border-l-2 border-outline-variant/20">
+                            <p className="text-[10px] text-on-surface-variant text-center py-2">
+                              Sem análise disponível
+                            </p>
+                          </div>
+                        )}
+                      </Link>
+                    );
+                  })}
+                </section>
+              ))}
+            </div>
           ))
         )}
       </div>
