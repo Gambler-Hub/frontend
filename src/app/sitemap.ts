@@ -1,6 +1,8 @@
 import type { MetadataRoute } from 'next'
 import { parseISO } from 'date-fns'
 
+export const revalidate = 3600
+
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? 'http://localhost:3000'
 const STRAPI_URL = process.env.STRAPI_URL ?? 'http://localhost:1337'
 const STRAPI_TOKEN = process.env.STRAPI_API_TOKEN ?? ''
@@ -20,8 +22,7 @@ async function fetchAllMatchPickSlugs(): Promise<
     headers: {
       'Content-Type': 'application/json',
       Authorization: `Bearer ${STRAPI_TOKEN}`,
-    },
-    next: { revalidate: 3600 },
+    }
   })
 
   if (!res.ok) return []
