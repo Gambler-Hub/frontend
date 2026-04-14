@@ -17,7 +17,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { CalendarIcon, X } from "lucide-react";
+import { CalendarIcon } from "lucide-react";
 
 // ── Date utilities ───────────────────────────────────────────
 
@@ -165,10 +165,6 @@ export default function CalendarView() {
     setPickerOpen(false);
   }
 
-  function clearDateFilter() {
-    setSelectedDate(null);
-  }
-
   // Convert selectedDate string to Date object for the Calendar component
   const pickerValue = selectedDate
     ? parseISO(selectedDate + "T12:00:00")
@@ -254,7 +250,7 @@ export default function CalendarView() {
       {/* ── Main content ─────────────────────────── */}
       <div className="flex-1 space-y-8">
         {/* Date filter bar */}
-        <div className="flex flex-wrap items-center gap-3 pb-4 border-b border-outline-variant/10">
+        <div className="flex flex-wrap items-center justify-between gap-3 pb-4 border-b border-outline-variant/10">
           <div className="flex items-center gap-1 p-1 bg-surface-container-low rounded-lg flex-wrap">
             {quickDates.map((date) => (
               <button
@@ -272,40 +268,28 @@ export default function CalendarView() {
           </div>
 
           {/* Date picker */}
-          <div className="flex items-center gap-1">
-            <Popover open={pickerOpen} onOpenChange={(open) => setPickerOpen(open)}>
-              <PopoverTrigger
-                className={`flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium border transition-all ${
-                  selectedDate && !quickDates.includes(selectedDate)
-                    ? "border-primary/40 bg-primary-container text-on-primary-container"
-                    : "border-outline-variant/10 bg-surface-container-low text-on-surface-variant hover:text-on-surface"
-                }`}
-              >
-                <CalendarIcon className="w-4 h-4" />
-                {selectedDate && !quickDates.includes(selectedDate)
-                  ? formatQuickLabel(selectedDate, today)
-                  : "Outra data"}
-              </PopoverTrigger>
-              <PopoverContent align="start" className="w-auto p-0">
-                <Calendar
-                  mode="single"
-                  selected={pickerValue}
-                  onSelect={handlePickerDate}
-                  initialFocus
-                />
-              </PopoverContent>
-            </Popover>
-
-            {selectedDate && (
-              <button
-                onClick={clearDateFilter}
-                className="p-2 rounded-lg text-on-surface-variant hover:text-on-surface hover:bg-surface-container-low transition-all"
-                aria-label="Limpar filtro de data"
-              >
-                <X className="w-4 h-4" />
-              </button>
-            )}
-          </div>
+          <Popover open={pickerOpen} onOpenChange={(open) => setPickerOpen(open)}>
+            <PopoverTrigger
+              className={`flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium border transition-all ${
+                selectedDate && !quickDates.includes(selectedDate)
+                  ? "border-primary/40 bg-primary-container text-on-primary-container"
+                  : "border-outline-variant/10 bg-surface-container-low text-on-surface-variant hover:text-on-surface"
+              }`}
+            >
+              <CalendarIcon className="w-4 h-4" />
+              {selectedDate && !quickDates.includes(selectedDate)
+                ? formatQuickLabel(selectedDate, today)
+                : "Outra data"}
+            </PopoverTrigger>
+            <PopoverContent align="end" className="w-auto p-0">
+              <Calendar
+                mode="single"
+                selected={pickerValue}
+                onSelect={handlePickerDate}
+                initialFocus
+              />
+            </PopoverContent>
+          </Popover>
         </div>
 
         {/* Grouped matches */}
