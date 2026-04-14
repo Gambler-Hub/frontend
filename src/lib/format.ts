@@ -38,21 +38,23 @@ const TOURNAMENT_LABELS: Record<string, string> = {
   SUPER_LIG:           'Süper Lig',
 }
 
-const TOURNAMENT_FLAGS: Record<string, string> = {
-  BRASILEIRAO_SERIE_A:  '🇧🇷',
-  BRASILEIRAO_SERIE_B:  '🇧🇷',
-  PREMIER_LEAGUE:       '🏴󠁧󠁢󠁥󠁮󠁧󠁿',
-  LA_LIGA:              '🇪🇸',
-  BUNDESLIGA:           '🇩🇪',
-  LIGUE_1:              '🇫🇷',
-  SERIE_A:              '🇮🇹',
-  CHAMPIONS_LEAGUE:     '🇪🇺',
-  LIBERTADORES:         '🌎',
-  SULAMERICANA:         '🌎',
-  CHAMPIONSHIP:         '🏴󠁧󠁢󠁥󠁮󠁧󠁿',
-  EREDIVISIE:           '🇳🇱',
-  PRIMEIRA_LIGA:        '🇵🇹',
-  SUPER_LIG:            '🇹🇷',
+// Maps tournament IDs to flagcdn.com country codes.
+// null = supranational competition (no country flag) → show globe icon as fallback.
+const TOURNAMENT_FLAG_CODES: Record<string, string | null> = {
+  BRASILEIRAO_SERIE_A: 'br',
+  BRASILEIRAO_SERIE_B: 'br',
+  PREMIER_LEAGUE:      'gb-eng',
+  CHAMPIONSHIP:        'gb-eng',
+  LA_LIGA:             'es',
+  BUNDESLIGA:          'de',
+  LIGUE_1:             'fr',
+  SERIE_A:             'it',
+  CHAMPIONS_LEAGUE:    'eu',
+  LIBERTADORES:        null,   // CONMEBOL — sem bandeira padrão
+  SULAMERICANA:        null,   // CONMEBOL — sem bandeira padrão
+  EREDIVISIE:          'nl',
+  PRIMEIRA_LIGA:       'pt',
+  SUPER_LIG:           'tr',
 }
 
 /**
@@ -75,7 +77,13 @@ export function formatTournament(id: string): string {
   return TOURNAMENT_LABELS[id] ?? id.replace(/_/g, ' ')
 }
 
-/** Returns the flag emoji for a tournament, or 🌐 if unknown */
-export function getTournamentFlag(id: string): string {
-  return TOURNAMENT_FLAGS[id] ?? '🌐'
+/**
+ * Returns a flagcdn.com image URL for the tournament's country flag,
+ * or null for supranational competitions (Champions League excluded —
+ * it uses the EU flag). Use a Globe icon as fallback when null.
+ */
+export function getTournamentFlagUrl(id: string): string | null {
+  if (!(id in TOURNAMENT_FLAG_CODES)) return null
+  const code = TOURNAMENT_FLAG_CODES[id]
+  return code ? `https://flagcdn.com/w40/${code}.png` : null
 }

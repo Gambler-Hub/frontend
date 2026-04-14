@@ -6,7 +6,7 @@ import Link from "next/link";
 import { useForm } from "react-hook-form";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { useTRPC } from "@/lib/trpc/client";
-import { formatMarketName, formatTournament, getTournamentFlag } from "@/lib/format";
+import { formatMarketName, formatTournament, getTournamentFlagUrl } from "@/lib/format";
 import type { ValueBet } from "@/lib/strapi";
 import { addDays as dfAddDays, parseISO } from "date-fns";
 import { formatInTimeZone } from "date-fns-tz";
@@ -17,7 +17,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { CalendarIcon } from "lucide-react";
+import { CalendarIcon, Globe } from "lucide-react";
 
 // ── Date utilities ───────────────────────────────────────────
 
@@ -218,12 +218,15 @@ export default function CalendarView() {
                   }`}
                 >
                   <span>{formatTournament(league)}</span>
-                  <span
-                    className={`text-base px-1 rounded ${
-                      selectedLeague === league ? "opacity-100" : "opacity-60"
-                    }`}
-                  >
-                    {getTournamentFlag(league)}
+                  <span className={selectedLeague === league ? "opacity-100" : "opacity-50"}>
+                    {(() => {
+                      const url = getTournamentFlagUrl(league);
+                      return url ? (
+                        <Image src={url} alt="" width={20} height={14} className="rounded-[1px] object-cover" unoptimized />
+                      ) : (
+                        <Globe className="w-4 h-4 text-on-surface-variant" />
+                      );
+                    })()}
                   </span>
                 </button>
               ))}
@@ -312,10 +315,15 @@ export default function CalendarView() {
                 <section key={tournament} className="space-y-4">
                   {/* League header */}
                   <div className="flex items-center gap-3">
-                    <div className="w-8 h-8 rounded bg-surface-container flex items-center justify-center border border-outline-variant/20">
-                      <span className="text-base leading-none">
-                        {getTournamentFlag(tournament)}
-                      </span>
+                    <div className="w-8 h-8 rounded bg-surface-container flex items-center justify-center border border-outline-variant/20 overflow-hidden">
+                      {(() => {
+                        const url = getTournamentFlagUrl(tournament);
+                        return url ? (
+                          <Image src={url} alt="" width={32} height={24} className="w-full h-full object-cover" unoptimized />
+                        ) : (
+                          <Globe className="w-4 h-4 text-on-surface-variant" />
+                        );
+                      })()}
                     </div>
                     <h2 className="font-headline text-lg font-bold text-on-surface tracking-tight">
                       {formatTournament(tournament)}
