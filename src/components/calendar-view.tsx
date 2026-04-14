@@ -88,7 +88,7 @@ const TOURNAMENT_COUNTRY: Record<string, string> = {
 export default function CalendarView() {
   const trpc = useTRPC();
   const { data: picks } = useSuspenseQuery(
-    trpc.matchPicks.getUpcoming.queryOptions(),
+    trpc.matchPicks.getAll.queryOptions(),
   );
 
   const today = todayStr();
