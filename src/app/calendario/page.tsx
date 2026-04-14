@@ -16,7 +16,7 @@ export const metadata: Metadata = {
 
 export default async function CalendarioPage() {
   const queryClient = getQueryClient()
-  await queryClient.prefetchQuery(trpc.matchPicks.getUpcoming.queryOptions())
+  await queryClient.prefetchQuery(trpc.matchPicks.getAll.queryOptions())
 
   return (
     <HydrationBoundary state={dehydrate(queryClient)}>

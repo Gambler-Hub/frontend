@@ -69,6 +69,7 @@ export async function fetchMatchPicks(): Promise<MatchPick[]> {
     'sort[0]': 'match_date:asc',
     'filters[match_date][$gte]': cutoffISO(),
     'filters[publishedAt][$notNull]': 'true',
+    'pagination[pageSize]': '100',
   })
 
   const res = await fetch(`${STRAPI_URL}/api/match-picks?${params}`, {
