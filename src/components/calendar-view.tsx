@@ -173,7 +173,7 @@ export default function CalendarView() {
   return (
     <div className="flex flex-col lg:flex-row gap-8">
       {/* ── Sidebar ─────────────────────────────── */}
-      <aside className="w-full lg:w-64 flex-shrink-0 space-y-8">
+      <aside className="w-full lg:w-64 flex-shrink-0 min-w-0 space-y-8">
         {/* Search */}
         <div className="space-y-3">
           <label htmlFor="calendar-search" className="font-headline text-xs font-bold text-primary tracking-widest uppercase block">
@@ -251,7 +251,7 @@ export default function CalendarView() {
       </aside>
 
       {/* ── Main content ─────────────────────────── */}
-      <div className="flex-1 space-y-8">
+      <div className="flex-1 min-w-0 space-y-8">
         {/* Date filter bar */}
         <div className="flex flex-wrap items-center justify-between gap-3 pb-4 border-b border-outline-variant/10">
           <div className="flex items-center gap-1 p-1 bg-surface-container-low rounded-lg flex-wrap">
@@ -339,7 +339,7 @@ export default function CalendarView() {
                       <Link
                         key={pick.id}
                         href={`/partidas/${pick.slug}`}
-                        className="glass-card p-6 rounded-xl flex flex-col md:flex-row items-center gap-6 hover:shadow-[0_0_30px_rgba(83,221,252,0.05)] hover:border-primary/20 border border-transparent transition-all"
+                        className="glass-card p-4 sm:p-6 rounded-xl flex flex-col md:flex-row items-center gap-4 md:gap-6 hover:shadow-[0_0_30px_rgba(83,221,252,0.05)] hover:border-primary/20 border border-transparent transition-all"
                       >
                         {/* Time */}
                         <div className="flex flex-col items-center md:items-start min-w-[80px]">
@@ -404,7 +404,7 @@ export default function CalendarView() {
                             className={`w-full md:w-56 bg-surface-container-highest/40 rounded-lg p-3 space-y-2 border-l-2 ${scoreBorderClass(score)}`}
                           >
                             <div className="flex items-center justify-between">
-                              <span className="text-[10px] font-bold text-primary tracking-tighter">
+                              <span className="text-[10px] font-bold text-primary tracking-tighter truncate">
                                 IA ÍNDICE DE FORÇA
                               </span>
                               <span
@@ -415,7 +415,7 @@ export default function CalendarView() {
                             </div>
                             <div className="flex items-center justify-between">
                               <span className="text-[10px] text-on-surface-variant">
-                                TREND
+                                TENDÊNCIA
                               </span>
                               <span className="text-[10px] font-bold text-on-surface truncate max-w-[110px]">
                                 {bet.side.toUpperCase()} {bet.line} —{" "}

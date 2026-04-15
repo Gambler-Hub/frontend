@@ -32,6 +32,7 @@ const TOURNAMENT_LABELS: Record<string, string> = {
   LIGUE_1:             'Ligue 1',
   LIBERTADORES:        'Copa Libertadores',
   SULAMERICANA:        'Copa Sul-Americana',
+  LIGA_PROFESIONAL:    'Liga Profesional',
   CHAMPIONSHIP:        'Championship',
   EREDIVISIE:          'Eredivisie',
   PRIMEIRA_LIGA:       'Primeira Liga',
@@ -52,6 +53,7 @@ const TOURNAMENT_FLAG_CODES: Record<string, string | null> = {
   CHAMPIONS_LEAGUE:    'eu',
   LIBERTADORES:        null,   // CONMEBOL — sem bandeira padrão
   SULAMERICANA:        null,   // CONMEBOL — sem bandeira padrão
+  LIGA_PROFESIONAL:    'ar',
   EREDIVISIE:          'nl',
   PRIMEIRA_LIGA:       'pt',
   SUPER_LIG:           'tr',
