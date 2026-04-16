@@ -22,7 +22,8 @@ async function fetchAllMatchPickSlugs(): Promise<
     headers: {
       'Content-Type': 'application/json',
       Authorization: `Bearer ${STRAPI_TOKEN}`,
-    }
+    },
+    next: { revalidate: 3600 },
   })
 
   if (!res.ok) return []
