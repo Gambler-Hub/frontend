@@ -29,6 +29,8 @@ const TOURNAMENT_LABELS: Record<string, string> = {
   BUNDESLIGA:          'Bundesliga',
   SERIE_A:             'Serie A',
   CHAMPIONS_LEAGUE:    'Champions League',
+  EUROPA_LEAGUE:       'Europa League',
+  CONFERENCE_LEAGUE:   'Conference League',
   LIGUE_1:             'Ligue 1',
   LIBERTADORES:        'Copa Libertadores',
   SULAMERICANA:        'Copa Sul-Americana',
@@ -51,6 +53,8 @@ const TOURNAMENT_FLAG_CODES: Record<string, string | null> = {
   LIGUE_1:             'fr',
   SERIE_A:             'it',
   CHAMPIONS_LEAGUE:    'eu',
+  EUROPA_LEAGUE:       'eu',
+  CONFERENCE_LEAGUE:   'eu',
   LIBERTADORES:        null,   // CONMEBOL — sem bandeira padrão
   SULAMERICANA:        null,   // CONMEBOL — sem bandeira padrão
   LIGA_PROFESIONAL:    'ar',
