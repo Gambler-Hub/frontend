@@ -1,6 +1,8 @@
 import type { MetadataRoute } from 'next'
 import { parseISO } from 'date-fns'
 
+export const revalidate = 3600
+
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? 'http://localhost:3000'
 const STRAPI_URL = process.env.STRAPI_URL ?? 'http://localhost:1337'
 const STRAPI_TOKEN = process.env.STRAPI_API_TOKEN ?? ''
@@ -8,29 +10,41 @@ const STRAPI_TOKEN = process.env.STRAPI_API_TOKEN ?? ''
 async function fetchAllMatchPickSlugs(): Promise<
   { slug: string; updatedAt: string }[]
 > {
-  const params = new URLSearchParams({
-    'fields[0]': 'slug',
-    'fields[1]': 'updatedAt',
-    'filters[publishedAt][$notNull]': 'true',
-    'pagination[pageSize]': '1000',
-    'sort[0]': 'match_date:desc',
-  })
+  const PAGE_SIZE = 100
+  const results: { slug: string; updatedAt: string }[] = []
+  let page = 1
+  let totalPages = 1
 
-  const res = await fetch(`${STRAPI_URL}/api/match-picks?${params}`, {
-    headers: {
-      'Content-Type': 'application/json',
-      Authorization: `Bearer ${STRAPI_TOKEN}`,
-    },
-    next: { revalidate: 3600 },
-  })
+  do {
+    const params = new URLSearchParams({
+      'fields[0]': 'slug',
+      'fields[1]': 'updatedAt',
+      'filters[publishedAt][$notNull]': 'true',
+      'pagination[pageSize]': String(PAGE_SIZE),
+      'pagination[page]': String(page),
+      'sort[0]': 'match_date:desc',
+    })
 
-  if (!res.ok) return []
+    const res = await fetch(`${STRAPI_URL}/api/match-picks?${params}`, {
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${STRAPI_TOKEN}`,
+      }
+    })
 
-  const json = await res.json()
-  return (json.data ?? []).map((item: { slug: string; updatedAt: string }) => ({
-    slug: item.slug,
-    updatedAt: item.updatedAt,
-  }))
+    if (!res.ok) break
+
+    const json = await res.json()
+    totalPages = json.meta?.pagination?.pageCount ?? 1
+
+    for (const item of json.data ?? []) {
+      results.push({ slug: item.slug, updatedAt: item.updatedAt })
+    }
+
+    page++
+  } while (page <= totalPages)
+
+  return results
 }
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
