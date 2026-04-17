@@ -63,6 +63,18 @@ const TOURNAMENT_FLAG_CODES: Record<string, string | null> = {
   SUPER_LIG:           'tr',
 }
 
+// flagcdn codes → ISO 3166-1 alpha-2; 'eu' and null are supranational (no valid country)
+const FLAG_TO_ISO: Record<string, string> = {
+  'br': 'BR', 'gb-eng': 'GB', 'es': 'ES', 'de': 'DE',
+  'fr': 'FR', 'it': 'IT', 'ar': 'AR', 'nl': 'NL', 'pt': 'PT', 'tr': 'TR',
+}
+
+export function getTournamentCountryCode(tournament: string): string | null {
+  const flag = TOURNAMENT_FLAG_CODES[tournament]
+  if (!flag) return null
+  return FLAG_TO_ISO[flag] ?? null
+}
+
 /**
  * Formats a market name into a human-readable Portuguese label.
  * Pass `teamLabel` (the actual team name) for TEAM_* markets.

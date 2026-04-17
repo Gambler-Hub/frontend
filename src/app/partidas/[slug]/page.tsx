@@ -4,7 +4,7 @@ import { dehydrate, HydrationBoundary } from '@tanstack/react-query'
 import { trpc, getQueryClient } from '@/lib/trpc/server'
 import MatchDetail from '@/components/match-detail'
 import { fetchMatchPickBySlug, fetchMatchPickSlugs } from '@/lib/strapi'
-import { formatTournament } from '@/lib/format'
+import { formatTournament, getTournamentCountryCode } from '@/lib/format'
 import { formatInTimeZone } from 'date-fns-tz'
 import { ptBR } from 'date-fns/locale'
 import type { MatchPick } from '@/lib/strapi'
@@ -82,19 +82,41 @@ export default async function PartidaPage({ params }: Props) {
   const tournament = formatTournament(pick.tournament)
   const pageUrl = `${SITE_URL}/partidas/${slug}`
 
+  const matchDate = new Date(pick.match_date)
+  const endDate = new Date(matchDate.getTime() + 2 * 60 * 60 * 1000).toISOString()
+  const isPast = matchDate < new Date()
+
   const jsonLd = [
     {
       '@context': 'https://schema.org',
       '@type': 'SportsEvent',
       name: matchup,
       startDate: pick.match_date,
+      endDate,
+      eventStatus: isPast
+        ? 'https://schema.org/EventCompleted'
+        : 'https://schema.org/EventScheduled',
       sport: 'Futebol',
       url: pageUrl,
+      image: `${SITE_URL}/logo_with_name.png`,
       description: `Palpite e prognóstico para ${matchup} pelo ${tournament}. Análise quantitativa com probabilidades e mercados de valor.`,
       homeTeam: { '@type': 'SportsTeam', name: pick.home_team },
       awayTeam: { '@type': 'SportsTeam', name: pick.away_team },
-      organizer: { '@type': 'SportsOrganization', name: tournament },
-      location: { '@type': 'Place', name: tournament },
+      performer: [
+        { '@type': 'SportsTeam', name: pick.home_team },
+        { '@type': 'SportsTeam', name: pick.away_team },
+      ],
+      organizer: { '@type': 'SportsOrganization', name: tournament, url: pageUrl },
+      location: {
+        '@type': 'Place',
+        name: tournament,
+        ...(getTournamentCountryCode(pick.tournament) && {
+          address: {
+            '@type': 'PostalAddress',
+            addressCountry: getTournamentCountryCode(pick.tournament),
+          },
+        }),
+      },
       eventAttendanceMode: 'https://schema.org/OfflineEventAttendanceMode',
     },
     {
