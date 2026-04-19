@@ -63,24 +63,41 @@ function endOfDayISO(daysFromNow: number): string {
 
 // ── Fetch functions ──────────────────────────────────────────
 
+async function fetchAllPages(baseParams: URLSearchParams, label: string, revalidate = 3600): Promise<MatchPick[]> {
+  const PAGE_SIZE = 100
+  const all: MatchPick[] = []
+  let page = 1
+
+  while (true) {
+    baseParams.set('pagination[page]', String(page))
+    baseParams.set('pagination[pageSize]', String(PAGE_SIZE))
+
+    const res = await fetch(`${STRAPI_URL}/api/match-picks?${baseParams}`, {
+      headers: headers(),
+      next: { revalidate },
+    })
+
+    if (!res.ok) throw new Error(`Strapi ${label} failed: ${res.status}`)
+
+    const json: StrapiList<MatchPick> = await res.json()
+    all.push(...json.data)
+
+    if (page >= json.meta.pagination.pageCount) break
+    page++
+  }
+
+  return all
+}
+
 export async function fetchMatchPicks(): Promise<MatchPick[]> {
   const params = new URLSearchParams({
     populate: 'markets',
     'sort[0]': 'match_date:asc',
     'filters[match_date][$gte]': cutoffISO(),
     'filters[publishedAt][$notNull]': 'true',
-    'pagination[pageSize]': '100',
   })
 
-  const res = await fetch(`${STRAPI_URL}/api/match-picks?${params}`, {
-    headers: headers(),
-    next: { revalidate: 3600 },
-  })
-
-  if (!res.ok) throw new Error(`Strapi fetchMatchPicks failed: ${res.status}`)
-
-  const json: StrapiList<MatchPick> = await res.json()
-  return json.data
+  return fetchAllPages(params, 'fetchMatchPicks', 300)
 }
 
 export async function fetchMatchPicksUpcoming(days = 7): Promise<MatchPick[]> {
@@ -90,18 +107,9 @@ export async function fetchMatchPicksUpcoming(days = 7): Promise<MatchPick[]> {
     'filters[match_date][$gte]': cutoffISO(),
     'filters[match_date][$lte]': endOfDayISO(days),
     'filters[publishedAt][$notNull]': 'true',
-    'pagination[pageSize]': '100',
   })
 
-  const res = await fetch(`${STRAPI_URL}/api/match-picks?${params}`, {
-    headers: headers(),
-    next: { revalidate: 3600 },
-  })
-
-  if (!res.ok) throw new Error(`Strapi fetchMatchPicksUpcoming failed: ${res.status}`)
-
-  const json: StrapiList<MatchPick> = await res.json()
-  return json.data
+  return fetchAllPages(params, 'fetchMatchPicksUpcoming', 1800)
 }
 
 export async function fetchMatchPickSlugs(): Promise<string[]> {
