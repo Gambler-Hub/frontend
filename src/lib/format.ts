@@ -24,6 +24,7 @@ const MARKET_LABELS: Record<string, string> = {
 const TOURNAMENT_LABELS: Record<string, string> = {
   BRASILEIRAO_SERIE_A: 'Brasileirão Série A',
   BRASILEIRAO_SERIE_B: 'Brasileirão Série B',
+  COPA_DO_BRASIL:      'Copa do Brasil',
   PREMIER_LEAGUE:      'Premier League',
   LA_LIGA:             'La Liga',
   BUNDESLIGA:          'Bundesliga',
@@ -46,6 +47,7 @@ const TOURNAMENT_LABELS: Record<string, string> = {
 const TOURNAMENT_FLAG_CODES: Record<string, string | null> = {
   BRASILEIRAO_SERIE_A: 'br',
   BRASILEIRAO_SERIE_B: 'br',
+  COPA_DO_BRASIL:      'br',
   PREMIER_LEAGUE:      'gb-eng',
   CHAMPIONSHIP:        'gb-eng',
   LA_LIGA:             'es',
