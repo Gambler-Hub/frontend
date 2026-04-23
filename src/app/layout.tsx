@@ -23,6 +23,7 @@ const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? 'http://localhost:3000'
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
+  applicationName: 'Portal do Apostador',
   title: {
     default: 'Portal do Apostador — Palpites e Análises de Apostas Esportivas',
     template: '%s | Portal do Apostador',

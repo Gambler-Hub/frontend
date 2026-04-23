@@ -7,6 +7,11 @@ const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? 'http://localhost:3000'
 
 export const metadata: Metadata = {
   title: 'Palpites de Futebol Hoje e Amanhã — Calendário de Partidas',
+  openGraph: {
+    title: 'Calendário de Partidas — Palpites de Futebol',
+    siteName: 'Portal do Apostador',
+    url: `${SITE_URL}/calendario`,
+  },
   description:
     'Veja os palpites e prognósticos para os jogos de futebol de hoje e dos próximos dias. Análises com modelo estatístico para Brasileirão, Premier League, Champions League e mais.',
   alternates: {

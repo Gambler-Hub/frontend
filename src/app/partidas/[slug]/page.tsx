@@ -49,6 +49,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       'apostas de valor',
     ],
     openGraph: {
+      siteName: 'Portal do Apostador',
       title,
       description,
       type: 'article',
