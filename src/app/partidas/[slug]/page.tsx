@@ -40,10 +40,10 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     title,
     description,
     keywords: [
-      `palpite ${pick.home_team} x ${pick.away_team}`,
-      `prognóstico ${pick.home_team} ${pick.away_team}`,
+      `palpite  ${matchup}`,
+      `prognóstico ${matchup}`,
       `dicas apostas ${matchup}`,
-      `${pick.home_team} x ${pick.away_team} ${tournament}`,
+      `${matchup} ${tournament}`,
       `palpite ${tournament}`,
       'apostas futebol',
       'apostas de valor',

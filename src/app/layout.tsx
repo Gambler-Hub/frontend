@@ -30,8 +30,8 @@ export const metadata: Metadata = {
   description:
     'Palpites, prognósticos e análises quantitativas para apostas em futebol. Modelo estatístico com probabilidades, edge e valor em mercados de gols, escanteios, cartões e mais.',
   keywords: [
-    'palpites de apostas',
-    'prognósticos futebol',
+    'palpites',
+    'prognóstico',
     'dicas de apostas',
     'apostas esportivas',
     'value betting',
@@ -53,6 +53,13 @@ export const metadata: Metadata = {
   },
 }
 
+const websiteJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'WebSite',
+  name: 'Portal do Apostador',
+  url: SITE_URL,
+}
+
 export default function RootLayout({
   children,
 }: {
@@ -63,6 +70,12 @@ export default function RootLayout({
       lang="pt-BR"
       className={`dark ${spaceGrotesk.variable} ${inter.variable}`}
     >
+      <head>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteJsonLd) }}
+        />
+      </head>
       <body className="min-h-screen bg-background text-on-surface font-body antialiased">
         <ClarityScript />
         <TRPCReactProvider>
